@@ -9,7 +9,7 @@ USE bd_prof_liberais_v2;
 -- Tabela para usuários
 CREATE TABLE usuarios (
     usuario_id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL, ///////QUESTIONAR PROFISSIONAL DE 2 ÁREAS COM MESMO EMAIL/////////
     senha_hash VARCHAR(255) NOT NULL,
     nome VARCHAR(100) NOT NULL,
     telefone CHAR(11),
