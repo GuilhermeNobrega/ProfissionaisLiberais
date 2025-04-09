@@ -23,6 +23,10 @@ db_config = {
 def index():
     return app.send_static_file('index.html')
 
+@app.route('/login')
+def login():
+    return app.send_static_file('login.html')
+
 # Rota de teste
 @app.route('/api/test', methods=['GET'])
 def test():
