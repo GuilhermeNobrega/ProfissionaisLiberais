@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ProfissionaisLib</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">ProfissionaisLib</div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Voltar ao Início</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="login-page">
+        <div class="login-container">
+            <h1>Entrar</h1>
+            <form class="login-form" id="formLogin">
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="senha" placeholder="Senha" required>
+                </div>
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox">
+                        <span>Lembrar-me</span>
+                    </label>
+                    <a href="#" class="forgot-password">Esqueceu a senha?</a>
+                </div>
+                <button type="submit" class="submit-button">Entrar</button>
+            </form>
+            <div class="register-link">
+                <p>Não tem uma conta? <a href="{{ url_for('home') }}" class="accent-link">Cadastre-se</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>&copy; 2024 ProfissionaisLib. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('formLogin').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('/api/login', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert("Email ou senha inválidos.");
+                }
+            })
+            .catch(error => {
+                console.error("Erro no login:", error);
+            });
+        });
+    </script>
+</body>
+</html>
