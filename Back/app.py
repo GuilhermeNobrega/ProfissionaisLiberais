@@ -27,6 +27,11 @@ def home():
 def login_page():
     return render_template('login.html')
 
+@app.route('/profissionais')
+def pagina_profissionais():
+    return render_template('profissionais.html')
+
+
 # Rota de login
 @app.route('/api/login', methods=['POST'])
 def login():

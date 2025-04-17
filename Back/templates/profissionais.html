@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Profissionais Disponíveis</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin: 1rem;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Profissionais Cadastrados</h1>
+  <div id="lista-profissionais"></div>
+
+  <script>
+    fetch('/api/profissionais')
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById('lista-profissionais');
+        if (data.length === 0) {
+          container.innerHTML = "<p>Nenhum profissional encontrado.</p>";
+          return;
+        }
+        data.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <h2>${p.nome}</h2>
+            <p><strong>Profissão:</strong> ${p.profissao || 'Não informada'}</p>
+            <p><strong>Descrição:</strong> ${p.descricao || 'Sem descrição'}</p>
+            <p><strong>Avaliação:</strong> ${p.media_avaliacao || 'N/A'}</p>
+          `;
+          container.appendChild(card);
+        });
+      })
+      .catch(error => {
+        console.error("Erro ao buscar profissionais:", error);
+      });
+  </script>
+</body>
+</html>
