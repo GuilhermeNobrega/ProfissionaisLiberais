@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro - Profissionais Liberais</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
+</head>
+<body>
+
+  <div class="cadastro-page">
+    <div class="cadastro-container">
+      <h1>Cadastro</h1>
+      <form id="cadastroForm" class="cadastro-form" method="POST" action="{{ url_for('cadastro') }}">
+        <div class="form-group">
+          <input type="text" id="nome" name="nome" placeholder="Nome Completo" required />
+        </div>
+        <div class="form-group">
+          <input type="email" id="email" name="email" placeholder="Email" required />
+        </div>
+        <div class="form-group">
+          <input type="password" id="senha" name="senha" placeholder="Senha" required />
+          <div id="senhaError" class="error-message">A senha deve ter pelo menos 8 caracteres, 1 número e 1 letra maiúscula.</div>
+        </div>
+        <div class="form-group">
+          <input type="password" id="confirmSenha" placeholder="Confirmar Senha" required />
+          <div id="confirmSenhaError" class="error-message">As senhas não coincidem.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="tipoUsuario">Tipo de Usuário</label>
+          <select id="tipoUsuario" name="tipo_usuario" required>
+            <option value="">Selecione</option>
+            <option value="profissional">Profissional</option>
+            <option value="cliente">Cliente</option>
+          </select>
+        </div>
+
+        <button type="submit" class="submit-button">Cadastrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("cadastroForm").addEventListener("submit", function(event) {
+      const senha = document.getElementById("senha").value;
+      const confirmSenha = document.getElementById("confirmSenha").value;
+      const senhaError = document.getElementById("senhaError");
+      const confirmSenhaError = document.getElementById("confirmSenhaError");
+      const tipoUsuario = document.getElementById("tipoUsuario").value;
+
+      const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+      let valid = true;
+
+      if (!regex.test(senha)) {
+        senhaError.style.display = "block";
+        valid = false;
+      } else {
+        senhaError.style.display = "none";
+      }
+
+      if (senha !== confirmSenha) {
+        confirmSenhaError.style.display = "block";
+        valid = false;
+      } else {
+        confirmSenhaError.style.display = "none";
+      }
+
+      if (!tipoUsuario) {
+        alert("Por favor, selecione o tipo de usuário.");
+        valid = false;
+      }
+
+      if (!valid) {
+        event.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>

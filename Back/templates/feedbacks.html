@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Feedbacks do Profissional</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/feedbacks.css') }}" />
+</head>
+<body>
+  <div id="feedback-container"></div>
+
+  <script>
+    const feedbacks = {
+      ana: {
+        nome: 'Ana Silva',
+        profissao: 'Advogada Tributarista',
+        imagem: "{{ url_for('static', filename='imgs/ana.png') }}",
+        comentarios: [
+          "Excelente profissional!",
+          "Muito atenciosa e competente.",
+          "Recomendo fortemente!"
+        ]
+      },
+      carlos: {
+        nome: 'Carlos Santos',
+        profissao: 'Engenheiro Civil',
+        imagem: "{{ url_for('static', filename='imgs/carlos.png') }}",
+        comentarios: [
+          "Profissional muito qualificado.",
+          "Entrega no prazo com excelência.",
+          "Trabalho impecável!"
+        ]
+      },
+      maria: {
+        nome: 'Mariana Costa',
+        profissao: 'Contadora',
+        imagem: "{{ url_for('static', filename='imgs/maria.png') }}",
+        comentarios: [
+          "Me ajudou muito na organização financeira.",
+          "Atendimento rápido e claro.",
+          "Nota 10!"
+        ]
+      }
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const profId = urlParams.get('prof');
+    const container = document.getElementById('feedback-container');
+
+    if (profId && feedbacks[profId]) {
+      const prof = feedbacks[profId];
+      container.innerHTML = `
+        <img src="${prof.imagem}" alt="${prof.nome}" class="professional-photo" />
+        <h2>${prof.nome}</h2>
+        <p>${prof.profissao}</p>
+        <h3>Feedbacks:</h3>
+        <ul>
+          ${prof.comentarios.map(com => `<li>${com}</li>`).join('')}
+        </ul>
+        <button onclick="voltarPagina()" class="voltar-btn">← Voltar</button>
+      `;
+    } else {
+      container.innerHTML = `<p>Profissional não encontrado.</p>`;
+    }
+
+    function voltarPagina() {
+      window.location.href = "{{ url_for('home') }}";
+    }
+  </script>
+</body>
+</html>
