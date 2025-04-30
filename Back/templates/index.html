@@ -89,7 +89,7 @@
           <p>Advogada Tributarista</p>
           <div class="rating">⭐⭐⭐⭐⭐</div>
         </div>
-
+    
         <div class="professional-card">
           <img src="{{ url_for('static', filename='imgs/carlos.png') }}"
                alt="Carlos Santos"
@@ -99,7 +99,7 @@
           <p>Engenheiro Civil</p>
           <div class="rating">⭐⭐⭐⭐⭐</div>
         </div>
-
+    
         <div class="professional-card">
           <img src="{{ url_for('static', filename='imgs/maria.png') }}"
                alt="Mariana Costa"
@@ -111,21 +111,21 @@
         </div>
       </div>
     </section>
-
+    
     <section id="contato" class="contact">
       <h2>Entre em Contato</h2>
       <div class="contact-container">
-        <form class="contact-form">
-          <input type="text" placeholder="Nome" required>
-          <input type="email" placeholder="Email" required>
-          <select required>
+        <form class="contact-form" method="POST" action="{{ url_for('enviar_contato') }}">
+          <input type="text" name="nome" placeholder="Nome" required>
+          <input type="email" name="email" placeholder="Email" required>
+          <select name="servico" required>
             <option value="">Selecione o serviço</option>
             <option value="advocacia">Advocacia</option>
             <option value="contabilidade">Contabilidade</option>
             <option value="engenharia">Engenharia</option>
             <option value="ti">TI e Desenvolvimento</option>
           </select>
-          <textarea placeholder="Mensagem" required></textarea>
+          <textarea name="mensagem" placeholder="Mensagem" required></textarea>
           <button type="submit" class="submit-button">Enviar Mensagem</button>
         </form>
       </div>
@@ -158,6 +158,13 @@
     </div>
   </footer>
 
+  <script>
+    function abrirFeedback(profissionalId) {
+      window.location.href = "/feedbacks?prof=" + profissionalId;
+    }
+  </script>
+  
+  </script>
   <script>
     setTimeout(() => {
       const popup = document.querySelector('.popup-success');

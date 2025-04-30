@@ -13,7 +13,7 @@
       ana: {
         nome: 'Ana Silva',
         profissao: 'Advogada Tributarista',
-        imagem: "{{ url_for('static', filename='imgs/ana.png') }}",
+        imagem: "/static/imgs/ana.png",
         comentarios: [
           "Excelente profissional!",
           "Muito atenciosa e competente.",
@@ -23,7 +23,7 @@
       carlos: {
         nome: 'Carlos Santos',
         profissao: 'Engenheiro Civil',
-        imagem: "{{ url_for('static', filename='imgs/carlos.png') }}",
+        imagem: "/static/imgs/carlos.png",
         comentarios: [
           "Profissional muito qualificado.",
           "Entrega no prazo com excelência.",
@@ -33,7 +33,7 @@
       maria: {
         nome: 'Mariana Costa',
         profissao: 'Contadora',
-        imagem: "{{ url_for('static', filename='imgs/maria.png') }}",
+        imagem: "/static/imgs/maria.png",
         comentarios: [
           "Me ajudou muito na organização financeira.",
           "Atendimento rápido e claro.",
@@ -63,7 +63,7 @@
     }
 
     function voltarPagina() {
-      window.location.href = "{{ url_for('home') }}";
+      window.location.href = "/";
     }
   </script>
 </body>

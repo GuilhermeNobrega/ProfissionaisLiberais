@@ -153,6 +153,12 @@ def registro_ti():
 
 # ------------------------- OUTRAS PÁGINAS -------------------------
 
+@app.route('/enviar-contato', methods=['POST'])
+def enviar_contato():
+    # Aqui vai a lógica para processar o formulário
+    return redirect(url_for('home', mensagem="Mensagem enviada com sucesso!"))
+
+
 @app.route('/profissionais')
 def pagina_profissionais():
     return render_template('profissionais.html')
