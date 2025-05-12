@@ -36,7 +36,6 @@
   </nav>
 
   <main>
-    <!-- Mensagem de sucesso -->
     {% if mensagem %}
       <div class="popup-success">
         {{ mensagem }}
@@ -79,39 +78,48 @@
 
     <section id="profissionais" class="professionals">
       <h2>Profissionais Destacados</h2>
-      <div class="professionals-grid">
-        <div class="professional-card">
-          <img src="{{ url_for('static', filename='imgs/ana.png') }}"
-               alt="Ana Silva"
-               class="professional-image"
-               onclick="abrirFeedback('ana')" />
-          <h3>Ana Silva</h3>
-          <p>Advogada Tributarista</p>
-          <div class="rating">⭐⭐⭐⭐⭐</div>
-        </div>
-    
-        <div class="professional-card">
-          <img src="{{ url_for('static', filename='imgs/carlos.png') }}"
-               alt="Carlos Santos"
-               class="professional-image"
-               onclick="abrirFeedback('carlos')" />
-          <h3>Carlos Santos</h3>
-          <p>Engenheiro Civil</p>
-          <div class="rating">⭐⭐⭐⭐⭐</div>
-        </div>
-    
-        <div class="professional-card">
-          <img src="{{ url_for('static', filename='imgs/maria.png') }}"
-               alt="Mariana Costa"
-               class="professional-image"
-               onclick="abrirFeedback('maria')" />
-          <h3>Mariana Costa</h3>
-          <p>Contadora</p>
-          <div class="rating">⭐⭐⭐⭐⭐</div>
-        </div>
+      <div class="professionals-grid" id="profissionais-container">
+        <!-- Conteúdo dinâmico -->
       </div>
     </section>
-    
+
+    <script>
+      async function carregarProfissionais() {
+        const resposta = await fetch('/profissionais-top');
+        const profissionais = await resposta.json();
+        const container = document.getElementById('profissionais-container');
+        container.innerHTML = '';
+
+        profissionais.forEach(prof => {
+          const id = prof.nome
+            .split(' ')[0]
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+
+          container.innerHTML += `
+            <div class="professional-card">
+              <img src="/static/imgs/placeholder.png" alt="${prof.nome}" class="professional-image"
+                onclick="abrirFeedback('${id}')" />
+              <h3>${prof.nome}</h3>
+              <p>${prof.profissao}</p>
+              <div class="rating">⭐ ${parseFloat(prof.media_avaliacao || 0).toFixed(1)}</div>
+            </div>`;
+        });
+      }
+
+      function abrirFeedback(profissionalId) {
+        window.location.href = "/feedbacks?prof=" + profissionalId;
+      }
+
+      carregarProfissionais();
+
+      setTimeout(() => {
+        const popup = document.querySelector('.popup-success');
+        if (popup) popup.style.display = 'none';
+      }, 4000);
+    </script>
+
     <section id="contato" class="contact">
       <h2>Entre em Contato</h2>
       <div class="contact-container">
@@ -157,19 +165,5 @@
       <p>&copy; 2024 ProfissionaisLib. Todos os direitos reservados.</p>
     </div>
   </footer>
-
-  <script>
-    function abrirFeedback(profissionalId) {
-      window.location.href = "/feedbacks?prof=" + profissionalId;
-    }
-  </script>
-  
-  </script>
-  <script>
-    setTimeout(() => {
-      const popup = document.querySelector('.popup-success');
-      if (popup) popup.style.display = 'none';
-    }, 4000);
-  </script>
 </body>
 </html>

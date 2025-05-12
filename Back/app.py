@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for, session, j
 from flask_cors import CORS
 import MySQLdb
 from config import Config
+from enviarEmail import enviar_email_contato
 
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta'  # Troque por algo seguro em produção
@@ -153,12 +154,6 @@ def registro_ti():
 
 # ------------------------- OUTRAS PÁGINAS -------------------------
 
-@app.route('/enviar-contato', methods=['POST'])
-def enviar_contato():
-    # Aqui vai a lógica para processar o formulário
-    return redirect(url_for('home', mensagem="Mensagem enviada com sucesso!"))
-
-
 @app.route('/profissionais')
 def pagina_profissionais():
     return render_template('profissionais.html')
@@ -173,20 +168,53 @@ def validacao():
 
 # ------------------------- LISTAGEM DE PROFISSIONAIS -------------------------
 
-@app.route('/profissionais-json')
-def listar_profissionais():
+@app.route('/profissionais-top')
+def profissionais_top():
     db = get_db_connection()
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    
     cursor.execute("""
-        SELECT p.profissional_id, u.nome, p.profissao, p.descricao, p.media_avaliacao
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            p.media_avaliacao,
+            COALESCE(p.foto_perfil, '') AS foto_perfil
         FROM profissionais p
-        JOIN usuarios u ON u.usuario_id = p.usuario_id
+        ORDER BY p.media_avaliacao DESC
+        LIMIT 6
     """)
+    
     profissionais = cursor.fetchall()
     cursor.close()
     db.close()
+
+    # Se não houver foto, adiciona uma padrão
+    for prof in profissionais:
+        if not prof['foto_perfil']:
+            prof['foto_perfil'] = '/static/imgs/placeholder.png'
+
     return jsonify(profissionais)
 
+
+
+
+
+@app.route('/enviar-contato', methods=['POST'])
+def enviar_contato():
+    nome = request.form.get('nome')
+    email = request.form.get('email')
+    servico = request.form.get('servico')
+    mensagem = request.form.get('mensagem')
+
+    sucesso = enviar_email_contato(nome, email, servico, mensagem)
+
+    if sucesso:
+        session['mensagem_sucesso'] = "Mensagem enviada com sucesso! Verifique seu e-mail."
+    else:
+        session['mensagem_sucesso'] = "Erro ao enviar o e-mail. Tente novamente mais tarde."
+
+    return redirect(url_for('home'))
 # ------------------------- RODAR A APLICAÇÃO -------------------------
 
 if __name__ == '__main__':
