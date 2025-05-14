@@ -1,4 +1,3 @@
-# ProfissionaisLiberais
 
 # Profissionais Liberais – Full Stack
 
