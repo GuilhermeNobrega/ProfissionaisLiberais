@@ -30,8 +30,4 @@ Aplicação web completa desenvolvida com **HTML, CSS e JavaScript** no front-en
 
 ---
 
-## 🚀 Como Executar
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/GuilhermeNobrega/ProfissionaisLiberais.git
