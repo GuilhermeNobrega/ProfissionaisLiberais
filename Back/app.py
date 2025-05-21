@@ -182,7 +182,7 @@ def profissionais_top():
             COALESCE(p.foto_perfil, '') AS foto_perfil
         FROM profissionais p
         ORDER BY p.media_avaliacao DESC
-        LIMIT 6
+        LIMIT 3
     """)
     
     profissionais = cursor.fetchall()
