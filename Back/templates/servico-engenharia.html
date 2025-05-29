@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engenharia</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+</head>
+<body>
+  <nav class="nav">
+    <div class="logo">Profissionais Liberais</div>
+    <ul class="nav-links">
+      <li><a href="/">Início</a></li>
+      <li><a href="/">Serviços</a></li>
+      <li><a href="/">Profissionais</a></li>
+      <li><a href="/">Contato</a></li>
+    </ul>
+    <a href="/login" class="btn-acessar">Acessar</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Engenharia</h1>
+      <p>Projetos, consultorias e laudos técnicos com os melhores engenheiros.</p>
+    </div>
+  </section>
+
+  <section class="professionals">
+    <h2>Profissionais em Destaque</h2>
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+
+        <!-- Engenheira 1 -->
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="https://randomuser.me/api/portraits/women/21.jpg" alt="Juliana Rocha" class="professional-image" />
+            <h3>Juliana Rocha</h3>
+            <p>Engenheira Civil</p>
+            <div class="rating">⭐ 4.8</div>
+            <a href="#" class="btn">Ver feedbacks</a>
+          </div>
+        </div>
+
+        <!-- Engenheiro 2 -->
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Ricardo Mendes" class="professional-image" />
+            <h3>Ricardo Mendes</h3>
+            <p>Engenheiro Elétrico</p>
+            <div class="rating">⭐ 4.7</div>
+            <a href="#" class="btn">Ver feedbacks</a>
+          </div>
+        </div>
+
+        <!-- Engenheira 3 -->
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="https://randomuser.me/api/portraits/women/36.jpg" alt="Fernanda Lima" class="professional-image" />
+            <h3>Fernanda Lima</h3>
+            <p>Engenheira Ambiental</p>
+            <div class="rating">⭐ 4.9</div>
+            <a href="#" class="btn">Ver feedbacks</a>
+          </div>
+        </div>
+
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>NeoService</h4>
+        <p>Conectando você aos melhores profissionais</p>
+      </div>
+      <div class="footer-section">
+        <h4>Links Rápidos</h4>
+        <ul>
+          <li><a href="/">Início</a></li>
+          <li><a href="/">Serviços</a></li>
+          <li><a href="/">Profissionais</a></li>
+          <li><a href="/">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contato</h4>
+        <p>Email: contato@profissionaislib.com</p>
+        <p>Tel: (11) 99999-9999</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 ProfissionaisLib. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    const swiper = new Swiper(".mySwiper", {
+      slidesPerView: 1,
+      spaceBetween: 20,
+      loop: true,
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+      breakpoints: {
+        640: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        1024: { slidesPerView: 3 }
+      }
+    });
+  </script>
+</body>
+</html>

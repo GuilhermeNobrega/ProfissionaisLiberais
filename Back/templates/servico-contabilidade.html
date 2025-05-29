@@ -1,0 +1,116 @@
+<!-- Exemplo para Contabilidade: servico-contabilidade.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serviço de Contabilidade</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+</head>
+<body>
+<nav class="nav">
+    <div class="logo">Profissionais Liberais</div>
+    <ul class="nav-links">
+      <li><a href="/">Início</a></li>
+      <li><a href="/">Serviços</a></li>
+      <li><a href="/">Profissionais</a></li>
+      <li><a href="/">Contato</a></li>
+    </ul>
+    <a href="/login" class="btn-acessar">Acessar</a>
+  </nav>
+  <header class="hero">
+    
+    <div class="hero-content">
+      <h1>Contabilidade</h1>
+      <p>Especialistas em contabilidade fiscal, consultoria financeira e gestão empresarial.</p>
+    </div>
+  </header>
+
+  <main class="professionals">
+    <h2>Profissionais em Destaque</h2>
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="https://randomuser.me/api/portraits/men/51.jpg" class="professional-image" alt="João Martins">
+            <h3>João Martins</h3>
+            <p>Contador Sênior</p>
+            <div class="rating">⭐ 4.8</div>
+            <a href="#" class="btn">Ver feedbacks</a>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="https://randomuser.me/api/portraits/women/65.jpg" class="professional-image" alt="Luciana Alves">
+            <h3>Luciana Alves</h3>
+            <p>Especialista em Planejamento Fiscal</p>
+            <div class="rating">⭐ 4.9</div>
+            <a href="#" class="btn">Ver feedbacks</a>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="https://randomuser.me/api/portraits/men/33.jpg" class="professional-image" alt="Carlos Mendes">
+            <h3>Carlos Mendes</h3>
+            <p>Consultor Tributário</p>
+            <div class="rating">⭐ 5.0</div>
+            <a href="#" class="btn">Ver feedbacks</a>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>NeoService</h4>
+        <p>Conectando você aos melhores profissionais</p>
+      </div>
+      <div class="footer-section">
+        <h4>Links Rápidos</h4>
+        <ul>
+          <li><a href="/">Início</a></li>
+          <li><a href="/">Serviços</a></li>
+          <li><a href="/">Profissionais</a></li>
+          <li><a href="/">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contato</h4>
+        <p>Email: contato@profissionaislib.com</p>
+        <p>Tel: (11) 99999-9999</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 ProfissionaisLib. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    const swiper = new Swiper(".mySwiper", {
+      slidesPerView: 1,
+      spaceBetween: 20,
+      loop: true,
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+      breakpoints: {
+        640: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        1024: { slidesPerView: 3 }
+      }
+    });
+  </script>
+</body>
+</html>

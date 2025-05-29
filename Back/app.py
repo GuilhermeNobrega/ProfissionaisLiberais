@@ -91,66 +91,22 @@ def cadastro():
 
     return render_template('cadastro.html')
 
-# ------------------------- REGISTRO POR PROFISSÃO -------------------------
+# ------------------------- SERVIÇO POR PROFISSÃO -------------------------
+@app.route('/servico-advocacia.html')
+def servico_advocacia():
+    return render_template('servico-advocacia.html')
 
-@app.route('/registro-advocacia', methods=['GET', 'POST'])
-def registro_advocacia():
-    if request.method == 'POST':
-        nome = request.form['nome_completo']
-        email = request.form['email']
-        telefone = request.form['telefone']
-        oab = request.form['oab']
-        especialidade = request.form['especialidade']
-        experiencia = request.form['experiencia']
+@app.route('/servico-contabilidade.html')
+def servico_contabilidade():
+    return render_template('servico-contabilidade.html')
 
-        print(f"Advogado cadastrado: {nome}, {especialidade}")
-        return redirect(url_for('home'))
+@app.route('/servico-engenharia.html')
+def servico_engenharia():
+    return render_template('servico-engenharia.html')
 
-    return render_template('registro-advocacia.html')
-
-@app.route('/registro-contabilidade', methods=['GET', 'POST'])
-def registro_contabilidade():
-    if request.method == 'POST':
-        nome = request.form['nome_completo']
-        email = request.form['email']
-        telefone = request.form['telefone']
-        crc = request.form['crc']
-        especialidade = request.form['especialidade']
-        experiencia = request.form['experiencia']
-
-        print(f"Contador cadastrado: {nome}, {especialidade}")
-        return redirect(url_for('home'))
-
-    return render_template('registro-contabilidade.html')
-
-@app.route('/registro-engenharia', methods=['GET', 'POST'])
-def registro_engenharia():
-    if request.method == 'POST':
-        nome = request.form['nome_completo']
-        email = request.form['email']
-        telefone = request.form['telefone']
-        crea = request.form['crea']
-        especialidade = request.form['especialidade']
-        experiencia = request.form['experiencia']
-
-        print(f"Engenheiro cadastrado: {nome}, {especialidade}")
-        return redirect(url_for('home'))
-
-    return render_template('registro-engenharia.html')
-
-@app.route('/registro-ti', methods=['GET', 'POST'])
-def registro_ti():
-    if request.method == 'POST':
-        nome = request.form['nome_completo']
-        email = request.form['email']
-        telefone = request.form['telefone']
-        especialidade = request.form['especialidade']
-        experiencia = request.form['experiencia']
-
-        print(f"Profissional de TI cadastrado: {nome}, {especialidade}")
-        return redirect(url_for('home'))
-
-    return render_template('registro-ti.html')
+@app.route('/servico-ti.html')
+def servico_ti():
+    return render_template('servico-ti.html')
 
 # ------------------------- OUTRAS PÁGINAS -------------------------
 
