@@ -28,28 +28,63 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email'].strip().lower()
+        email = request.form['email']
         senha = request.form['senha']
 
         db = get_db_connection()
-        cursor = db.cursor()
-        cursor.execute("SELECT usuario_id, senha_hash, tipo_usuario FROM usuarios WHERE email = %s", (email,))
-        user = cursor.fetchone()
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+        usuario = cursor.fetchone()
         cursor.close()
         db.close()
 
-        if user and senha == user[1]:
-            session['usuario_id'] = user[0]
-            session['tipo_usuario'] = user[2]
-            session['mensagem_sucesso'] = "Login realizado com sucesso!"
-            return redirect(url_for('home'))
+        if usuario and senha == usuario['senha_hash']:  # use hash real no futuro
+            session['usuario_id'] = usuario['usuario_id']
+            session['tipo_usuario'] = usuario['tipo_usuario']
 
-        return render_template('login.html', erro="Credenciais inválidas")
+            if usuario['tipo_usuario'] == 'cliente':
+                return redirect(url_for('cliente_dashboard'))
+            else:
+                return redirect(url_for('profissional_dashboard'))
 
-    return render_template('login.html')
+        flash("Login inválido")
+    return render_template("login.html")
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('home'))  # ou 'login', se preferir
 
+@app.route('/cliente/meu-perfil')
+def meu_perfil():
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
+    cliente_id = 1  # Simulação
+    cursor.execute("SELECT nome, email, data_cadastro FROM usuarios WHERE usuario_id = %s", (cliente_id,))
+    cliente = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    return render_template('meu-perfil.html', cliente=cliente)
+
+@app.route('/cliente/editar-perfil')
+def editar_perfil():
+    # Simule dados do cliente
+    cliente = {
+        'nome': 'Carlos Vítor',
+        'email': 'teste@exemplo.com'
+    }
+    return render_template('cliente-editar-perfil.html', cliente=cliente)
+
+@app.route('/cliente/alterar-senha')
+def alterar_senha():
+    return render_template('cliente-alterar-senha.html')
+
+@app.route('/cliente/servicos')
+def cliente_servicos():
+    return render_template('cliente-servicos.html')
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
@@ -94,7 +129,30 @@ def cadastro():
 # ------------------------- SERVIÇO POR PROFISSÃO -------------------------
 @app.route('/servico-advocacia.html')
 def servico_advocacia():
-    return render_template('servico-advocacia.html')
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            p.media_avaliacao
+        FROM profissionais p
+        WHERE LOWER(p.profissao) LIKE '%advogado%'
+           OR LOWER(p.profissao) LIKE '%advogada%'
+           OR LOWER(p.profissao) LIKE '%direito%'
+        ORDER BY p.media_avaliacao DESC
+        LIMIT 3
+    """)
+
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return render_template('servico-advocacia.html', profissionais=profissionais)
+
 
 @app.route('/servico-contabilidade.html')
 def servico_contabilidade():
@@ -110,6 +168,9 @@ def servico_contabilidade():
             p.media_avaliacao
         FROM profissionais p
         WHERE LOWER(p.profissao) LIKE '%conta%'
+        OR LOWER(p.profissao) LIKE '%fiscal%'
+        OR LOWER(p.profissao) LIKE '%contador%'
+        OR LOWER(p.profissao) LIKE '%contadora%'
         ORDER BY p.media_avaliacao DESC
         LIMIT 3
     """)
@@ -119,6 +180,7 @@ def servico_contabilidade():
     db.close()
 
     return render_template('servico-contabilidade.html', profissionais=profissionais)
+
 
 
 @app.route('/servico-engenharia.html')
@@ -134,7 +196,9 @@ def servico_engenharia():
             COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
             p.media_avaliacao
         FROM profissionais p
-        WHERE LOWER(p.profissao) LIKE '%engenhe%'  -- ajuste para área desejada
+        WHERE LOWER(p.profissao) LIKE '%engenheir%' 
+           OR LOWER(p.profissao) LIKE '%arquiteto%'
+           OR LOWER(p.profissao) LIKE '%projetista%'
         ORDER BY p.media_avaliacao DESC
         LIMIT 3
     """)
@@ -144,6 +208,8 @@ def servico_engenharia():
     db.close()
 
     return render_template('servico-engenharia.html', profissionais=profissionais)
+
+
 
 
 @app.route('/servico-ti.html')
@@ -190,11 +256,10 @@ def servico_saude():
             COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
             p.media_avaliacao
         FROM profissionais p
-        WHERE LOWER(p.profissao) LIKE '%psic%' 
-            OR LOWER(p.profissao) LIKE '%terapeu%' 
-            OR LOWER(p.profissao) LIKE '%clínic%' 
-            OR LOWER(p.profissao) LIKE '%nutric%'
-            OR LOWER(p.profissao) LIKE '%médic%'
+        WHERE LOWER(p.profissao) LIKE '%médic%'
+        OR LOWER(p.profissao) LIKE '%enfermeir%'
+        OR LOWER(p.profissao) LIKE '%psicolog%'
+        OR LOWER(p.profissao) LIKE '%nutricion%'
         ORDER BY p.media_avaliacao DESC
         LIMIT 3
     """)
@@ -204,6 +269,7 @@ def servico_saude():
     db.close()
 
     return render_template('servico-saude.html', profissionais=profissionais)
+
 
 
 @app.route('/servico-educacao.html')
@@ -329,6 +395,107 @@ def enviar_contato():
         session['mensagem_sucesso'] = "Erro ao enviar o e-mail. Tente novamente mais tarde."
 
     return redirect(url_for('home'))
+
+@app.route('/cliente-dashboard')
+def cliente_dashboard():
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    # Simula o cliente logado (substitua por sessão se já estiver implementado)
+    cliente_id = 1
+
+    # Dados do cliente
+    cursor.execute("""
+        SELECT nome, email
+        FROM usuarios
+        WHERE usuario_id = %s
+    """, (cliente_id,))
+    cliente_data = cursor.fetchone()
+    cliente = {
+        'nome': cliente_data['nome'],
+        'email': cliente_data['email']
+    }
+
+    # Últimos profissionais avaliados
+    cursor.execute("""
+        SELECT 
+            p.profissional_id, 
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao, 
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            MAX(a.data_avaliacao) AS ultima_avaliacao
+        FROM avaliacoes a
+        JOIN profissionais p ON a.profissional_id = p.profissional_id
+        WHERE a.cliente_id = %s
+        GROUP BY p.profissional_id, p.primeiro_nome, p.ultimo_nome, p.profissao, p.foto_perfil
+        ORDER BY ultima_avaliacao DESC
+        LIMIT 3
+    """, (cliente_id,))
+    ultimos_profissionais = cursor.fetchall()
+
+    # Sugestões de profissionais (exceto os que ele já avaliou)
+    cursor.execute("""
+        SELECT 
+            p.profissional_id, 
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao, 
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil
+        FROM profissionais p
+        WHERE p.profissional_id NOT IN (
+            SELECT profissional_id FROM avaliacoes WHERE cliente_id = %s
+        )
+        ORDER BY p.media_avaliacao DESC
+        LIMIT 3
+    """, (cliente_id,))
+    recomendados = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template("cliente-dashboard.html", cliente=cliente,
+                           ultimos_profissionais=ultimos_profissionais,
+                           recomendados=recomendados)
+
+
+@app.route("/cliente")
+def dashboard_cliente():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    cliente_id = session['usuario_id']
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    # Pega os dados básicos do cliente
+    cursor.execute("""
+        SELECT nome, email
+        FROM usuarios
+        WHERE usuario_id = %s
+    """, (cliente_id,))
+    cliente_data = cursor.fetchone()
+    cliente = {
+        'nome': cliente_data['nome'],
+        'email': cliente_data['email']
+    }
+
+    # Busca agendamentos futuros (se desejar mostrar algo)
+    cursor.execute("""
+        SELECT a.data_horario, a.status, s.nome AS servico, 
+               CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS profissional
+        FROM agendamentos a
+        JOIN profissionais p ON a.profissional_id = p.profissional_id
+        LEFT JOIN servicos s ON a.servico_id = s.servico_id
+        WHERE a.cliente_id = %s
+        ORDER BY a.data_horario ASC
+        LIMIT 5
+    """, (cliente_id,))
+    agendamentos = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template("cliente_dashboard.html", cliente=cliente, agendamentos=agendamentos)
+
 # ------------------------- RODAR A APLICAÇÃO -------------------------
 
 if __name__ == '__main__':

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advocacia - Profissionais Liberais</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advocacia</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
@@ -12,15 +12,15 @@
   <nav class="nav">
     <div class="logo">Profissionais Liberais</div>
     <ul class="nav-links">
-      <li><a href="{{ url_for('home') }}#inicio">Início</a></li>
-      <li><a href="{{ url_for('home') }}#servicos">Serviços</a></li>
-      <li><a href="{{ url_for('home') }}#profissionais">Profissionais</a></li>
-      <li><a href="{{ url_for('home') }}#contato">Contato</a></li>
+      <li><a href="/">Início</a></li>
+      <li><a href="/">Serviços</a></li>
+      <li><a href="/">Profissionais</a></li>
+      <li><a href="/">Contato</a></li>
     </ul>
-    <a href="{{ url_for('login') }}" class="btn-acessar">Acessar</a>
+    <a href="/login" class="btn-acessar">Acessar</a>
   </nav>
 
-  <!-- HERO DA ADVOCACIA -->
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-content">
       <h1>Advocacia</h1>
@@ -28,54 +28,28 @@
     </div>
   </section>
 
-  <!-- CARROSSEL DE PROFISSIONAIS EM DESTAQUE -->
-  <main class="servico-main">
-    <section class="servico-profissionais">
-      <h2>Profissionais em Destaque</h2>
-
-      <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-
-          <!-- Ana Souza -->
-          <div class="swiper-slide">
-            <div class="professional-card">
-              <img src="https://randomuser.me/api/portraits/women/65.jpg" class="professional-image" alt="Ana Souza">
-              <h3>Ana Souza</h3>
-              <p>Advogada Trabalhista</p>
-              <div class="rating">⭐ 4.9</div>
-              <a href="/feedbacks/10" class="btn">Ver feedbacks</a>
-            </div>
+  <!-- PROFISSIONAIS EM DESTAQUE -->
+  <section class="professionals">
+    <h2>Profissionais em Destaque</h2>
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        {% for prof in profissionais %}
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="{{ prof.foto_perfil }}" alt="{{ prof.nome }}" class="professional-image">
+            <h3>{{ prof.nome }}</h3>
+            <p>{{ prof.profissao }}</p>
+            <div class="rating">⭐ {{ prof.media_avaliacao }}</div>
+            <a href="{{ url_for('feedbacks_profissional', prof_id=prof.profissional_id) }}" class="btn">Ver feedbacks</a>
           </div>
-
-          <!-- Carlos Lima -->
-          <div class="swiper-slide">
-            <div class="professional-card">
-              <img src="https://randomuser.me/api/portraits/men/65.jpg" class="professional-image" alt="Carlos Lima">
-              <h3>Carlos Lima</h3>
-              <p>Advogado Empresarial</p>
-              <div class="rating">⭐ 4.8</div>
-              <a href="/feedbacks/11" class="btn">Ver feedbacks</a>
-            </div>
-          </div>
-
-          <!-- Maria Oliveira -->
-          <div class="swiper-slide">
-            <div class="professional-card">
-              <img src="https://randomuser.me/api/portraits/women/66.jpg" class="professional-image" alt="Maria Oliveira">
-              <h3>Maria Oliveira</h3>
-              <p>Advogada Civil</p>
-              <div class="rating">⭐ 5.0</div>
-              <a href="/feedbacks/12" class="btn">Ver feedbacks</a>
-            </div>
-          </div>
-
         </div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div>
+        {% endfor %}
       </div>
-    </section>
-  </main>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </section>
 
   <!-- FOOTER -->
   <footer class="footer">
@@ -87,10 +61,10 @@
       <div class="footer-section">
         <h4>Links Rápidos</h4>
         <ul>
-          <li><a href="{{ url_for('home') }}#inicio">Início</a></li>
-          <li><a href="{{ url_for('home') }}#servicos">Serviços</a></li>
-          <li><a href="{{ url_for('home') }}#profissionais">Profissionais</a></li>
-          <li><a href="{{ url_for('home') }}#contato">Contato</a></li>
+          <li><a href="/">Início</a></li>
+          <li><a href="/">Serviços</a></li>
+          <li><a href="/">Profissionais</a></li>
+          <li><a href="/">Contato</a></li>
         </ul>
       </div>
       <div class="footer-section">
@@ -104,7 +78,7 @@
     </div>
   </footer>
 
-  <!-- Swiper.js -->
+  <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const swiper = new Swiper(".mySwiper", {

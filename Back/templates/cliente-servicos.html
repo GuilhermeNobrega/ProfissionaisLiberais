@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serviços Disponíveis</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+    }
+
+    .sidebar {
+      width: 260px;
+      background-color: #243447;
+      color: white;
+      height: 100vh;
+      padding: 30px 20px;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 40px;
+      font-size: 1.6em;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar li {
+      margin: 20px 0;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.1em;
+    }
+
+    .sidebar a i {
+      margin-right: 10px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .content h1 {
+      margin-bottom: 40px;
+      font-size: 2em;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 30px;
+    }
+
+    .service-card {
+      background-color: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .service-card i {
+      font-size: 2.7rem;
+      margin-bottom: 15px;
+      color: #4A3E8D;
+    }
+
+    .service-card h3 {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .btn {
+      background-color: #6a0dad;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background-color: #4b0b9e;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Área do Cliente</h2>
+    <ul>
+      <li><a href="/cliente-dashboard"><i class="fas fa-home"></i> Início</a></li>
+      <li><a href="/cliente/meu-perfil"><i class="fas fa-user"></i> Meu perfil</a></li>
+      <li><a href="/avaliacoes"><i class="fas fa-comments"></i> Avaliações</a></li>
+      <li><a href="/cliente/servicos"><i class="fas fa-briefcase"></i> Serviços</a></li>
+      <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+    </ul>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <div class="content">
+    <h1>Serviços Disponíveis</h1>
+
+    <div class="card-grid">
+
+      <div class="service-card">
+        <i class="fas fa-gavel"></i>
+        <h3>Advocacia</h3>
+        <a href="/servico-advocacia.html" class="btn">Ver Profissionais</a>
+      </div>
+
+      <div class="service-card">
+        <i class="fas fa-calculator"></i>
+        <h3>Contabilidade</h3>
+        <a href="/servico-contabilidade.html" class="btn">Ver Profissionais</a>
+      </div>
+
+      <div class="service-card">
+        <i class="fas fa-drafting-compass"></i>
+        <h3>Engenharia</h3>
+        <a href="/servico-engenharia.html" class="btn">Ver Profissionais</a>
+      </div>
+
+      <div class="service-card">
+        <i class="fas fa-laptop-code"></i>
+        <h3>TI e Desenvolvimento</h3>
+        <a href="/servico-ti.html" class="btn">Ver Profissionais</a>
+      </div>
+
+      <div class="service-card">
+        <i class="fas fa-heartbeat"></i>
+        <h3>Saúde</h3>
+        <a href="/servico-saude.html" class="btn">Ver Profissionais</a>
+      </div>
+
+      <div class="service-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>Educação</h3>
+        <a href="/servico-educacao.html" class="btn">Ver Profissionais</a>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

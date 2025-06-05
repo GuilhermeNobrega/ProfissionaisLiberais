@@ -20,7 +20,7 @@
     <a href="{{ url_for('login') }}" class="btn-acessar">Acessar</a>
   </nav>
 
-  <!-- HERO DA ENGENHARIA -->
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-content">
       <h1>Engenharia</h1>
@@ -28,32 +28,29 @@
     </div>
   </section>
 
-  <!-- CARROSSEL DE PROFISSIONAIS EM DESTAQUE -->
-  <main class="servico-main">
-    <section class="servico-profissionais">
-      <h2>Profissionais em Destaque</h2>
-
-      <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-          {% for prof in profissionais %}
-          <div class="swiper-slide">
-            <div class="professional-card">
-              <img src="{{ prof.foto_perfil }}" class="professional-image" alt="{{ prof.nome }}">
-              <h3>{{ prof.nome }}</h3>
-              <p>{{ prof.profissao }}</p>
-              <div class="rating">⭐ {{ '%.1f'|format(prof.media_avaliacao) }}</div>
-              <a href="{{ url_for('feedbacks_profissional', prof_id=prof.profissional_id) }}" class="btn">Ver feedbacks</a>
-            </div>
+  <!-- PROFISSIONAIS EM DESTAQUE -->
+  <section class="professionals">
+    <h2>Profissionais em Destaque</h2>
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        {% for prof in profissionais %}
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="{{ prof.foto_perfil }}" alt="{{ prof.nome }}" class="professional-image">
+            <h3>{{ prof.nome }}</h3>
+            <p>{{ prof.profissao }}</p>
+            <div class="rating">⭐ {{ '%.1f'|format(prof.media_avaliacao) }}</div>
+            <a href="{{ url_for('feedbacks_profissional', prof_id=prof.profissional_id) }}" class="btn">Ver feedbacks</a>
           </div>
-          {% endfor %}
         </div>
-
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div>
+        {% endfor %}
       </div>
-    </section>
-  </main>
+
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </section>
 
   <!-- FOOTER -->
   <footer class="footer">

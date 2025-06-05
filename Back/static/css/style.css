@@ -550,3 +550,53 @@ body {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  .dashboard {
+  padding: 2rem;
+}
+
+.professional-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.professional-card {
+  flex: 1 1 250px;
+  background: #f7f7f7;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.professional-card img {
+  width: 120px;
+  height: 120px;
+  border-radius: 100%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.professional-card h3 {
+  margin-bottom: 5px;
+}
+
+.professional-card p {
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.professional-card .btn {
+  display: inline-block;
+  padding: 8px 15px;
+  background: #4A00E0;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.professional-card .btn:hover {
+  background: #2e0099;
+}
