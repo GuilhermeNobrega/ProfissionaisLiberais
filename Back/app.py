@@ -98,15 +98,140 @@ def servico_advocacia():
 
 @app.route('/servico-contabilidade.html')
 def servico_contabilidade():
-    return render_template('servico-contabilidade.html')
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            p.media_avaliacao
+        FROM profissionais p
+        WHERE LOWER(p.profissao) LIKE '%conta%'
+        ORDER BY p.media_avaliacao DESC
+        LIMIT 3
+    """)
+    
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return render_template('servico-contabilidade.html', profissionais=profissionais)
+
 
 @app.route('/servico-engenharia.html')
 def servico_engenharia():
-    return render_template('servico-engenharia.html')
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            p.media_avaliacao
+        FROM profissionais p
+        WHERE LOWER(p.profissao) LIKE '%engenhe%'  -- ajuste para área desejada
+        ORDER BY p.media_avaliacao DESC
+        LIMIT 3
+    """)
+    
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return render_template('servico-engenharia.html', profissionais=profissionais)
+
 
 @app.route('/servico-ti.html')
 def servico_ti():
-    return render_template('servico-ti.html')
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            p.media_avaliacao
+        FROM profissionais p
+        WHERE LOWER(p.profissao) LIKE '%ti%'
+        OR LOWER(p.profissao) LIKE '%tecnologia%'
+        OR LOWER(p.profissao) LIKE '%desenvolvedor%'
+        OR LOWER(p.profissao) LIKE '%desenvolvedora%'
+        OR LOWER(p.profissao) LIKE '%Analista de Sistemas%'
+        OR LOWER(p.profissao) LIKE '%Especialista em Segurança da Informação%'
+
+        ORDER BY p.media_avaliacao DESC
+        LIMIT 3
+    """)
+
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return render_template('servico-ti.html', profissionais=profissionais)
+
+
+@app.route('/servico-saude.html')
+def servico_saude():
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            p.media_avaliacao
+        FROM profissionais p
+        WHERE LOWER(p.profissao) LIKE '%psic%' 
+            OR LOWER(p.profissao) LIKE '%terapeu%' 
+            OR LOWER(p.profissao) LIKE '%clínic%' 
+            OR LOWER(p.profissao) LIKE '%nutric%'
+            OR LOWER(p.profissao) LIKE '%médic%'
+        ORDER BY p.media_avaliacao DESC
+        LIMIT 3
+    """)
+
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return render_template('servico-saude.html', profissionais=profissionais)
+
+
+@app.route('/servico-educacao.html')
+def servico_educacao():
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            p.media_avaliacao
+        FROM profissionais p
+        WHERE LOWER(p.profissao) LIKE '%educa%' 
+           OR LOWER(p.profissao) LIKE '%professor%'
+           OR LOWER(p.profissao) LIKE '%peda%'
+           OR LOWER(p.profissao) LIKE '%orientador%'
+        ORDER BY p.media_avaliacao DESC
+        LIMIT 3
+    """)
+
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return render_template('servico-educacao.html', profissionais=profissionais)
 
 # ------------------------- OUTRAS PÁGINAS -------------------------
 
@@ -114,9 +239,42 @@ def servico_ti():
 def pagina_profissionais():
     return render_template('profissionais.html')
 
-@app.route('/feedbacks')
-def feedbacks():
-    return render_template('feedbacks.html')
+@app.route('/feedbacks/<int:prof_id>')
+def feedbacks_profissional(prof_id):
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    # Busca o profissional
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil
+        FROM profissionais p
+        WHERE p.profissional_id = %s
+    """, (prof_id,))
+    profissional = cursor.fetchone()
+
+    if not profissional:
+        cursor.close()
+        db.close()
+        return "Profissional não encontrado", 404
+
+    # Busca os comentários do profissional
+    cursor.execute("""
+        SELECT comentario FROM avaliacoes
+        WHERE profissional_id = %s
+        ORDER BY data_avaliacao DESC
+    """, (prof_id,))
+    comentarios = [row['comentario'] for row in cursor.fetchall()]
+    profissional['comentarios'] = comentarios
+
+    cursor.close()
+    db.close()
+
+    return render_template('feedbacks.html', profissional=profissional)
+
 
 @app.route('/validacao', methods=['GET', 'POST'])
 def validacao():

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Serviço de TI e Desenvolvimento</title>
-  <link rel="stylesheet" href="../static/css/style.css">
+  <title>TI e Desenvolvimento</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
 <body>
@@ -18,6 +18,7 @@
     </ul>
     <a href="/login" class="btn-acessar">Acessar</a>
   </nav>
+
   <section class="hero">
     <div class="hero-content">
       <h1>TI e Desenvolvimento</h1>
@@ -29,42 +30,19 @@
     <h2>Profissionais em Destaque</h2>
     <div class="swiper mySwiper">
       <div class="swiper-wrapper">
-
-        <!-- Profissional 1 -->
+        {% for prof in profissionais %}
         <div class="swiper-slide">
           <div class="professional-card">
-            <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Lucas Almeida" class="professional-image">
-            <h3>Lucas Almeida</h3>
-            <p>Desenvolvedor Full-Stack</p>
-            <div class="rating">⭐ 4.9</div>
-            <a href="#" class="cta-button">Ver feedbacks</a>
+            <img src="{{ prof.foto_perfil }}" alt="{{ prof.nome }}" class="professional-image">
+            <h3>{{ prof.nome }}</h3>
+            <p>{{ prof.profissao }}</p>
+            <div class="rating">⭐ {{ prof.media_avaliacao }}</div>
+            <a href="{{ url_for('feedbacks_profissional', prof_id=prof.profissional_id) }}" class="btn">Ver feedbacks</a>
           </div>
         </div>
-
-        <!-- Profissional 2 -->
-        <div class="swiper-slide">
-          <div class="professional-card">
-            <img src="https://randomuser.me/api/portraits/women/74.jpg" alt="Juliana Castro" class="professional-image">
-            <h3>Juliana Castro</h3>
-            <p>Analista de Suporte</p>
-            <div class="rating">⭐ 4.7</div>
-            <a href="#" class="cta-button">Ver feedbacks</a>
-          </div>
-        </div>
-
-        <!-- Profissional 3 -->
-        <div class="swiper-slide">
-          <div class="professional-card">
-            <img src="https://randomuser.me/api/portraits/men/82.jpg" alt="Felipe Santos" class="professional-image">
-            <h3>Felipe Santos</h3>
-            <p>Especialista em Redes</p>
-            <div class="rating">⭐ 4.8</div>
-            <a href="#" class="cta-button">Ver feedbacks</a>
-          </div>
-        </div>
-
+        {% endfor %}
       </div>
-      <!-- Navegação Swiper -->
+
       <div class="swiper-button-next"></div>
       <div class="swiper-button-prev"></div>
       <div class="swiper-pagination"></div>
@@ -96,7 +74,7 @@
       <p>&copy; 2024 ProfissionaisLib. Todos os direitos reservados.</p>
     </div>
   </footer>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const swiper = new Swiper(".mySwiper", {

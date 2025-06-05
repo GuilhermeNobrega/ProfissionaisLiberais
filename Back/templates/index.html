@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profissionais Liberais - Encontre os Melhores Especialistas</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
   <style>
     .popup-success {
       background-color: #4CAF50;
@@ -20,6 +21,23 @@
     @keyframes fadein {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    .swiper {
+      padding: 20px 0;
+    }
+
+    .swiper-slide.service-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      text-align: center;
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .swiper-slide.service-card:hover {
+      transform: translateY(-5px);
     }
   </style>
 </head>
@@ -49,75 +67,58 @@
         <a href="#servicos" class="cta-button">Explorar Serviços</a>
       </div>
     </section>
+
     <section id="servicos" class="services">
       <h2>Nossos Serviços</h2>
-      <div class="services-grid">
-        <a href="servico-advocacia.html" class="service-card">
-          <div class="service-icon">💼</div>
-          <h3>Advocacia</h3>
-          <p>Especialistas em direito civil, trabalhista e empresarial</p>
-        </a>
-        <a href="servico-contabilidade.html" class="service-card">
-          <div class="service-icon">📊</div>
-          <h3>Contabilidade</h3>
-          <p>Consultoria financeira e contábil para pessoas e empresas</p>
-        </a>
-        <a href="servico-engenharia.html" class="service-card">
-          <div class="service-icon">🏗️</div>
-          <h3>Engenharia</h3>
-          <p>Projetos, laudos e consultoria em diversas áreas</p>
-        </a>
-        <a href="servico-ti.html" class="service-card">
-          <div class="service-icon">📱</div>
-          <h3>TI e Desenvolvimento</h3>
-          <p>Soluções tecnológicas e desenvolvimento de software</p>
-        </a>
+      <div class="swiper services-carousel">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide service-card">
+            <a href="servico-advocacia.html">
+              <div class="service-icon">💼</div>
+              <h3>Advocacia</h3>
+              <p>Especialistas em direito civil, trabalhista e empresarial</p>
+            </a>
+          </div>
+          <div class="swiper-slide service-card">
+            <a href="servico-contabilidade.html">
+              <div class="service-icon">📊</div>
+              <h3>Contabilidade</h3>
+              <p>Consultoria financeira e contábil para pessoas e empresas</p>
+            </a>
+          </div>
+          <div class="swiper-slide service-card">
+            <a href="servico-engenharia.html">
+              <div class="service-icon">🏗️</div>
+              <h3>Engenharia</h3>
+              <p>Projetos, laudos e consultoria em diversas áreas</p>
+            </a>
+          </div>
+          <div class="swiper-slide service-card">
+            <a href="servico-ti.html">
+              <div class="service-icon">📱</div>
+              <h3>TI e Desenvolvimento</h3>
+              <p>Soluções tecnológicas e desenvolvimento de software</p>
+            </a>
+          </div>
+          <div class="swiper-slide service-card">
+            <a href="servico-saude.html">
+              <div class="service-icon">🚑</div>
+              <h3>Saúde</h3>
+              <p>Clínicos, psicólogos e terapeutas especializados</p>
+            </a>
+          </div>
+          <div class="swiper-slide service-card">
+            <a href="servico-educacao.html">
+              <div class="service-icon">🎓</div>
+              <h3>Educação</h3>
+              <p>Professores, pedagogos e orientadores</p>
+            </a>
+          </div>
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
       </div>
     </section>
-
-    <section id="profissionais" class="professionals">
-      <h2>Profissionais Destacados</h2>
-      <div class="professionals-grid" id="profissionais-container">
-        <!-- Conteúdo dinâmico -->
-      </div>
-    </section>
-
-    <script>
-      async function carregarProfissionais() {
-        const resposta = await fetch('/profissionais-top');
-        const profissionais = await resposta.json();
-        const container = document.getElementById('profissionais-container');
-        container.innerHTML = '';
-
-        profissionais.forEach(prof => {
-          const id = prof.nome
-            .split(' ')[0]
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase();
-
-          container.innerHTML += `
-            <div class="professional-card">
-              <img src="/static/imgs/placeholder.png" alt="${prof.nome}" class="professional-image"
-                onclick="abrirFeedback('${id}')" />
-              <h3>${prof.nome}</h3>
-              <p>${prof.profissao}</p>
-              <div class="rating">⭐ ${parseFloat(prof.media_avaliacao || 0).toFixed(1)}</div>
-            </div>`;
-        });
-      }
-
-      function abrirFeedback(profissionalId) {
-        window.location.href = "/feedbacks?prof=" + profissionalId;
-      }
-
-      carregarProfissionais();
-
-      setTimeout(() => {
-        const popup = document.querySelector('.popup-success');
-        if (popup) popup.style.display = 'none';
-      }, 4000);
-    </script>
 
     <section id="contato" class="contact">
       <h2>Entre em Contato</h2>
@@ -131,6 +132,9 @@
             <option value="contabilidade">Contabilidade</option>
             <option value="engenharia">Engenharia</option>
             <option value="ti">TI e Desenvolvimento</option>
+            <option value="arquitetura">Arquitetura</option>
+            <option value="saude">Saúde</option>
+            <option value="educacao">Educação</option>
           </select>
           <textarea name="mensagem" placeholder="Mensagem" required></textarea>
           <button type="submit" class="submit-button">Enviar Mensagem</button>
@@ -164,5 +168,62 @@
       <p>&copy; 2024 ProfissionaisLib. Todos os direitos reservados.</p>
     </div>
   </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <script>
+    new Swiper('.services-carousel', {
+      slidesPerView: 1,
+      spaceBetween: 20,
+      loop: true,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev'
+      },
+      breakpoints: {
+        640: {
+          slidesPerView: 2,
+        },
+        1024: {
+          slidesPerView: 4,
+        },
+      },
+    });
+
+    async function carregarProfissionais() {
+      const resposta = await fetch('/profissionais-top');
+      const profissionais = await resposta.json();
+      const container = document.getElementById('profissionais-container');
+      container.innerHTML = '';
+
+      profissionais.forEach(prof => {
+        const id = prof.nome
+          .split(' ')[0]
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase();
+
+        container.innerHTML += `
+          <div class="professional-card">
+            <img src="${prof.foto_perfil}" alt="${prof.nome}" class="professional-image"
+              onclick="abrirFeedback('${id}')" />
+            <h3>${prof.nome}</h3>
+            <p>${prof.profissao}</p>
+            <div class="rating">⭐ ${parseFloat(prof.media_avaliacao || 0).toFixed(1)}</div>
+          </div>`;
+      });
+    }
+
+    function abrirFeedback(profissionalId) {
+      window.location.href = "/feedbacks?prof=" + profissionalId;
+    }
+
+    carregarProfissionais();
+
+    setTimeout(() => {
+      const popup = document.querySelector('.popup-success');
+      if (popup) popup.style.display = 'none';
+    }, 4000);
+  </script>
 </body>
 </html>
+

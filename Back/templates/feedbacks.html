@@ -6,93 +6,27 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/feedbacks.css') }}" />
 </head>
 <body>
-  <div id="feedback-container"></div>
+  <div id="feedback-container">
+    <img src="{{ profissional.foto_perfil }}" alt="{{ profissional.nome }}" class="professional-photo" />
+    <h2>{{ profissional.nome }}</h2>
+    <p>{{ profissional.profissao }}</p>
 
-  <script>
-    const feedbacks = {
-      ana: {
-        nome: 'Ana Silva',
-        profissao: 'Advogada Tributarista',
-        imagem: "/static/imgs/ana.png",
-        comentarios: [
-          "Excelente profissional!",
-          "Muito atenciosa e competente.",
-          "Recomendo fortemente!"
-        ]
-      },
-      carlos: {
-        nome: 'Carlos Santos',
-        profissao: 'Engenheiro Civil',
-        imagem: "/static/imgs/carlos.png",
-        comentarios: [
-          "Profissional muito qualificado.",
-          "Entrega no prazo com excelência.",
-          "Trabalho impecável!"
-        ]
-      },
-      mariana: {
-        nome: 'Mariana Costa',
-        profissao: 'Contadora',
-        imagem: "/static/imgs/maria.png",
-        comentarios: [
-          "Me ajudou muito na organização financeira.",
-          "Atendimento rápido e claro.",
-          "Nota 10!"
-        ]
-      },
-      joao: {
-        nome: 'João Exemplo',
-        profissao: 'Engenheiro Civil',
-        imagem: "/static/imgs/carlos.png",
-        comentarios: [
-          "Muito profissional!",
-          "Atendeu todas as expectativas.",
-          "Recomendo sem dúvidas!"
-        ]
-      }
-    };
+    <h3>Feedbacks:</h3>
+    <ul id="lista-comentarios">
+      {% for comentario in profissional.comentarios %}
+        <li>{{ comentario }}</li>
+      {% else %}
+        <li>Nenhum comentário ainda.</li>
+      {% endfor %}
+    </ul>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const profId = urlParams.get('prof');
-    const container = document.getElementById('feedback-container');
+    <form method="POST" action="/enviar-feedback">
+      <input type="hidden" name="profissional_id" value="{{ profissional.profissional_id }}">
+      <textarea name="comentario" placeholder="Deixe seu comentário..." rows="4" required style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
+      <button type="submit" class="voltar-btn" style="margin-top: 10px;">Enviar Comentário</button>
+    </form>
 
-    function renderFeedbacks(prof) {
-      container.innerHTML = `
-        <img src="${prof.imagem}" alt="${prof.nome}" class="professional-photo" />
-        <h2>${prof.nome}</h2>
-        <p>${prof.profissao}</p>
-        <h3>Feedbacks:</h3>
-        <ul id="lista-comentarios">
-          ${prof.comentarios.map(com => `<li>${com}</li>`).join('')}
-        </ul>
-
-        <div style="margin-top: 20px;">
-          <textarea id="novo-comentario" placeholder="Deixe seu comentário..." rows="4" style="width: 100%; padding: 10px; border-radius: 5px;"></textarea>
-          <button onclick="adicionarComentario()" class="voltar-btn" style="margin-top: 10px;">Enviar Comentário</button>
-        </div>
-
-        <button onclick="voltarPagina()" class="voltar-btn">← Voltar</button>
-      `;
-    }
-
-    if (profId && feedbacks[profId]) {
-      renderFeedbacks(feedbacks[profId]);
-    } else {
-      container.innerHTML = `<p>Profissional não encontrado.</p>`;
-    }
-
-    function adicionarComentario() {
-      const textarea = document.getElementById('novo-comentario');
-      const novoComentario = textarea.value.trim();
-      if (novoComentario) {
-        feedbacks[profId].comentarios.push(novoComentario);
-        renderFeedbacks(feedbacks[profId]); // Re-renderiza a tela com o novo comentário
-      }
-    }
-
-    function voltarPagina() {
-      window.location.href = "/";
-    }
-  </script>
+    <button onclick="history.back()" class="voltar-btn">← Voltar</button>
+  </div>
 </body>
 </html>

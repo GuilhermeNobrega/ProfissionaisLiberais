@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contabilidade - Profissionais Liberais</title>
+  <title>Educação</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
 <body>
-  <!-- NAVBAR -->
   <nav class="nav">
     <div class="logo">Profissionais Liberais</div>
     <ul class="nav-links">
@@ -20,42 +19,35 @@
     <a href="{{ url_for('login') }}" class="btn-acessar">Acessar</a>
   </nav>
 
-  <!-- HERO DA CONTABILIDADE -->
   <section class="hero">
     <div class="hero-content">
-      <h1>Contabilidade</h1>
-      <p>Especialistas em contabilidade fiscal, consultoria financeira e gestão empresarial.</p>
+      <h1>Educação</h1>
+      <p>Conecte-se com pedagogos, professores e orientadores para uma educação de qualidade.</p>
     </div>
   </section>
 
-  <!-- CARROSSEL DE PROFISSIONAIS EM DESTAQUE -->
-  <main class="servico-main">
-    <section class="servico-profissionais">
-      <h2>Profissionais em Destaque</h2>
-
-      <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-          {% for prof in profissionais %}
-          <div class="swiper-slide">
-            <div class="professional-card">
-              <img src="{{ prof.foto_perfil }}" class="professional-image" alt="{{ prof.nome }}">
-              <h3>{{ prof.nome }}</h3>
-              <p>{{ prof.profissao }}</p>
-              <div class="rating">⭐ {{ "%.1f"|format(prof.media_avaliacao) }}</div>
-              <a href="{{ url_for('feedbacks_profissional', prof_id=prof.profissional_id) }}" class="btn">Ver feedbacks</a>
-            </div>
+  <section class="professionals">
+    <h2>Profissionais em Destaque</h2>
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        {% for prof in profissionais %}
+        <div class="swiper-slide">
+          <div class="professional-card">
+            <img src="{{ prof.foto_perfil }}" alt="{{ prof.nome }}" class="professional-image" />
+            <h3>{{ prof.nome }}</h3>
+            <p>{{ prof.profissao }}</p>
+            <div class="rating">⭐ {{ prof.media_avaliacao }}</div>
+            <a href="{{ url_for('feedbacks_profissional', prof_id=prof.profissional_id) }}" class="btn">Ver feedbacks</a>
           </div>
-          {% endfor %}
         </div>
-
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div>
+        {% endfor %}
       </div>
-    </section>
-  </main>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </section>
 
-  <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-section">
@@ -82,7 +74,6 @@
     </div>
   </footer>
 
-  <!-- Swiper.js -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const swiper = new Swiper(".mySwiper", {

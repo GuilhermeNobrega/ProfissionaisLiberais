@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contabilidade - Profissionais Liberais</title>
+  <title>Profissionais da Saúde</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
 <body>
-  <!-- NAVBAR -->
   <nav class="nav">
     <div class="logo">Profissionais Liberais</div>
     <ul class="nav-links">
-      <li><a href="{{ url_for('home') }}#inicio">Início</a></li>
+      <li><a href="{{ url_for('home') }}">Início</a></li>
       <li><a href="{{ url_for('home') }}#servicos">Serviços</a></li>
       <li><a href="{{ url_for('home') }}#profissionais">Profissionais</a></li>
       <li><a href="{{ url_for('home') }}#contato">Contato</a></li>
@@ -20,15 +19,13 @@
     <a href="{{ url_for('login') }}" class="btn-acessar">Acessar</a>
   </nav>
 
-  <!-- HERO DA CONTABILIDADE -->
   <section class="hero">
     <div class="hero-content">
-      <h1>Contabilidade</h1>
-      <p>Especialistas em contabilidade fiscal, consultoria financeira e gestão empresarial.</p>
+      <h1>Saúde</h1>
+      <p>Atendimento com psicólogos, terapeutas, nutricionistas e outros profissionais de bem-estar.</p>
     </div>
   </section>
 
-  <!-- CARROSSEL DE PROFISSIONAIS EM DESTAQUE -->
   <main class="servico-main">
     <section class="servico-profissionais">
       <h2>Profissionais em Destaque</h2>
@@ -38,10 +35,10 @@
           {% for prof in profissionais %}
           <div class="swiper-slide">
             <div class="professional-card">
-              <img src="{{ prof.foto_perfil }}" class="professional-image" alt="{{ prof.nome }}">
+              <img src="{{ prof.foto_perfil }}" alt="{{ prof.nome }}" class="professional-image" />
               <h3>{{ prof.nome }}</h3>
               <p>{{ prof.profissao }}</p>
-              <div class="rating">⭐ {{ "%.1f"|format(prof.media_avaliacao) }}</div>
+              <div class="rating">⭐ {{ prof.media_avaliacao }}</div>
               <a href="{{ url_for('feedbacks_profissional', prof_id=prof.profissional_id) }}" class="btn">Ver feedbacks</a>
             </div>
           </div>
@@ -55,7 +52,6 @@
     </section>
   </main>
 
-  <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-section">
@@ -65,7 +61,7 @@
       <div class="footer-section">
         <h4>Links Rápidos</h4>
         <ul>
-          <li><a href="{{ url_for('home') }}#inicio">Início</a></li>
+          <li><a href="{{ url_for('home') }}">Início</a></li>
           <li><a href="{{ url_for('home') }}#servicos">Serviços</a></li>
           <li><a href="{{ url_for('home') }}#profissionais">Profissionais</a></li>
           <li><a href="{{ url_for('home') }}#contato">Contato</a></li>
@@ -82,7 +78,6 @@
     </div>
   </footer>
 
-  <!-- Swiper.js -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     const swiper = new Swiper(".mySwiper", {
