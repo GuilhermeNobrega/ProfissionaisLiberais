@@ -56,28 +56,36 @@ def logout():
     session.clear()
     return redirect(url_for('home'))  # ou 'login', se preferir
 
+
 @app.route('/cliente/meu-perfil')
-def meu_perfil():
+def cliente_meu_perfil():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    cliente_id = session['usuario_id']
+
     db = get_db_connection()
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
-    cliente_id = 1  # Simulação
-    cursor.execute("SELECT nome, email, data_cadastro FROM usuarios WHERE usuario_id = %s", (cliente_id,))
-    cliente = cursor.fetchone()
+    cursor.execute("""
+        SELECT nome, email, data_cadastro
+        FROM usuarios
+        WHERE usuario_id = %s
+    """, (cliente_id,))
+    dados = cursor.fetchone()
 
     cursor.close()
     db.close()
 
+    cliente = {
+        'nome': dados['nome'],
+        'email': dados['email'],
+        'data_cadastro': dados['data_cadastro']
+    }
+
     return render_template('meu-perfil.html', cliente=cliente)
 
-@app.route('/cliente/editar-perfil')
-def editar_perfil():
-    # Simule dados do cliente
-    cliente = {
-        'nome': 'Carlos Vítor',
-        'email': 'teste@exemplo.com'
-    }
-    return render_template('cliente-editar-perfil.html', cliente=cliente)
+
 
 @app.route('/cliente/alterar-senha')
 def alterar_senha():
@@ -440,10 +448,6 @@ def cliente_dashboard():
     """, (cliente_id,))
     cliente_data = cursor.fetchone()
 
-    if not cliente_data:
-        flash("Cliente não encontrado.")
-        return redirect(url_for('login'))
-
     cliente = {
         'nome': cliente_data['nome'],
         'email': cliente_data['email']
@@ -466,7 +470,7 @@ def cliente_dashboard():
     """, (cliente_id,))
     ultimos_profissionais = cursor.fetchall()
 
-    # Sugestões de profissionais (exceto os já avaliados)
+    # Recomendações (exceto os já avaliados)
     cursor.execute("""
         SELECT 
             p.profissional_id, 
@@ -488,9 +492,6 @@ def cliente_dashboard():
     return render_template("cliente-dashboard.html", cliente=cliente,
                            ultimos_profissionais=ultimos_profissionais,
                            recomendados=recomendados)
-
-
-
 
 
 @app.route('/profissional-dashboard')
