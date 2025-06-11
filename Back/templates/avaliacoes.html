@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Minhas Avaliações</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/feedbacks.css') }}">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <h2 class="logo">Menu</h2>
+            <nav>
+                <ul>
+                    <li><a href="/cliente-dashboard">🏠 Início</a></li>
+                    <li><a href="/meu-perfil">👤 Meu perfil</a></li>
+                    <li><a href="/avaliacoes" class="active">💬 Avaliações</a></li>
+                    <li><a href="/cliente-servicos">🛠️ Serviços</a></li>
+                    <li><a href="/logout">⏏️ Sair</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <section class="cabecalho-dashboard">
+                <h1>Minhas Avaliações</h1>
+                <p>Veja aqui os profissionais que você avaliou.</p>
+            </section>
+
+            <section class="avaliacoes-section">
+                {% if avaliacoes %}
+                    <div class="avaliacoes-grid">
+                        {% for av in avaliacoes %}
+                            <div class="avaliacao-card">
+                                <img src="{{ url_for('static', filename='imgs/' ~ av.foto) }}" class="avaliacao-foto" alt="Foto de {{ av.nome_profissional }}">
+                                <h3>{{ av.nome_profissional }}</h3>
+                                <p class="area">{{ av.area_atuacao }}</p>
+                                <p><strong>Nota:</strong> {{ av.nota }}/5</p>
+                                <p><strong>Comentário:</strong> {{ av.comentario }}</p>
+                                <p class="data-feedback">{{ av.data_feedback.strftime('%d/%m/%Y') }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Você ainda não avaliou nenhum profissional.</p>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+
+    <style>
+        .avaliacoes-section {
+            padding: 20px;
+        }
+
+        .avaliacoes-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .avaliacao-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 280px;
+            text-align: center;
+        }
+
+        .avaliacao-foto {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .area {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .data-feedback {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 10px;
+        }
+    </style>
+</body>
+</html>

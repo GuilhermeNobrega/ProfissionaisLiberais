@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
 from flask_cors import CORS
+from flask import flash
 import MySQLdb
 from config import Config
 from enviarEmail import enviar_email_contato
@@ -270,6 +271,31 @@ def servico_saude():
 
     return render_template('servico-saude.html', profissionais=profissionais)
 
+@app.route('/avaliacoes')
+def avaliacoes_feitas():
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT 
+            f.comentario, 
+            f.nota, 
+            f.data_feedback, 
+            p.nome AS nome_profissional, 
+            p.area_atuacao, 
+            COALESCE(p.foto, 'placeholder.png') AS foto
+        FROM feedbacks f
+        JOIN profissionais p ON f.profissional_id = p.id
+        ORDER BY f.data_feedback DESC
+        LIMIT 20
+    """)
+
+    avaliacoes = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template('avaliacoes.html', avaliacoes=avaliacoes)
 
 
 @app.route('/servico-educacao.html')
@@ -398,11 +424,13 @@ def enviar_contato():
 
 @app.route('/cliente-dashboard')
 def cliente_dashboard():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    cliente_id = session['usuario_id']
+
     db = get_db_connection()
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
-
-    # Simula o cliente logado (substitua por sessão se já estiver implementado)
-    cliente_id = 1
 
     # Dados do cliente
     cursor.execute("""
@@ -411,6 +439,11 @@ def cliente_dashboard():
         WHERE usuario_id = %s
     """, (cliente_id,))
     cliente_data = cursor.fetchone()
+
+    if not cliente_data:
+        flash("Cliente não encontrado.")
+        return redirect(url_for('login'))
+
     cliente = {
         'nome': cliente_data['nome'],
         'email': cliente_data['email']
@@ -433,7 +466,7 @@ def cliente_dashboard():
     """, (cliente_id,))
     ultimos_profissionais = cursor.fetchall()
 
-    # Sugestões de profissionais (exceto os que ele já avaliou)
+    # Sugestões de profissionais (exceto os já avaliados)
     cursor.execute("""
         SELECT 
             p.profissional_id, 
@@ -455,6 +488,66 @@ def cliente_dashboard():
     return render_template("cliente-dashboard.html", cliente=cliente,
                            ultimos_profissionais=ultimos_profissionais,
                            recomendados=recomendados)
+
+
+
+
+
+@app.route('/profissional-dashboard')
+def profissional_dashboard():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'profissional':
+        return redirect(url_for('login'))
+
+    usuario_id = session['usuario_id']
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    # Buscar dados do profissional vinculado ao usuário logado
+    cursor.execute("""
+        SELECT p.profissional_id, u.email, p.primeiro_nome, p.ultimo_nome, 
+               p.media_avaliacao
+        FROM profissionais p
+        JOIN usuarios u ON p.usuario_id = u.usuario_id
+        WHERE p.usuario_id = %s
+    """, (usuario_id,))
+    profissional = cursor.fetchone()
+
+    if not profissional:
+        flash("Profissional não encontrado.")
+        return redirect(url_for('login'))
+
+    profissional_id = profissional['profissional_id']
+
+    # Contar total de avaliações recebidas
+    cursor.execute("SELECT COUNT(*) as total FROM feedbacks WHERE profissional_id = %s", (profissional_id,))
+    total_avaliacoes = cursor.fetchone()['total']
+
+    # Contar clientes únicos atendidos
+    cursor.execute("SELECT COUNT(DISTINCT cliente_id) as total FROM feedbacks WHERE profissional_id = %s", (profissional_id,))
+    total_clientes = cursor.fetchone()['total']
+
+    # Últimos feedbacks recebidos (sem campo nota)
+    cursor.execute("""
+        SELECT f.comentario, f.data_envio, u.nome as cliente_nome
+        FROM feedbacks f
+        JOIN usuarios u ON f.cliente_id = u.usuario_id
+        WHERE f.profissional_id = %s
+        ORDER BY f.data_envio DESC
+        LIMIT 3
+    """, (profissional_id,))
+    feedbacks = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template(
+        'profissional-dashboard.html',
+        profissional=profissional,
+        total_avaliacoes=total_avaliacoes,
+        total_clientes=total_clientes,
+        feedbacks=feedbacks
+    )
+
 
 
 @app.route("/cliente")

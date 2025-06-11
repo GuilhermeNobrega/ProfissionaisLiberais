@@ -370,3 +370,9 @@ VALUES (28, 'Leandro', 'Ramos', 'Orientador Educacional', 4.7, 'https://randomus
 
 INSERT INTO profissionais (usuario_id, primeiro_nome, ultimo_nome, profissao, media_avaliacao, foto_perfil)
 VALUES (29, 'Renata', 'Alves', 'Pedagoga', 4.9, 'https://randomuser.me/api/portraits/women/63.jpg');
+
+select * from usuarios;
+
+DESCRIBE usuarios;
+
+	
