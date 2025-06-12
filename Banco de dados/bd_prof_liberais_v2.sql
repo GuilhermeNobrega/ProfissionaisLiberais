@@ -372,7 +372,35 @@ INSERT INTO profissionais (usuario_id, primeiro_nome, ultimo_nome, profissao, me
 VALUES (29, 'Renata', 'Alves', 'Pedagoga', 4.9, 'https://randomuser.me/api/portraits/women/63.jpg');
 
 select * from usuarios;
-
+SHOW COLUMNS FROM feedbacks;
 DESCRIBE usuarios;
+select * from profissionais;
+INSERT INTO usuarios (email, senha_hash, tipo_usuario, nome, telefone)
+VALUES ('engenheiro@exemplo.com', '123456', 'profissional', 'Lucas Engenheiro', '11999999999');
+select * from profissionais;
+SELECT usuario_id FROM usuarios WHERE email = 'engenheiro@exemplo.com';
+INSERT INTO profissionais (
+    usuario_id, primeiro_nome, ultimo_nome, profissao, media_avaliacao
+) VALUES (
+    30, 'Lucas', 'Engenheiro', 'Engenheiro Civil', 5.0
+);
 
-	
+DESCRIBE feedbacks;
+
+
+CREATE TABLE mensagens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id INT NOT NULL,
+    profissional_id INT NOT NULL,
+    texto TEXT NOT NULL,
+    resposta TEXT,
+    data_envio DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_resposta DATETIME,
+    FOREIGN KEY (cliente_id) REFERENCES usuarios(usuario_id),
+    FOREIGN KEY (profissional_id) REFERENCES profissionais(profissional_id)
+);
+
+
+SELECT DISTINCT profissao FROM profissionais;
+
+SELECT * FROM mensagens ORDER BY id DESC;

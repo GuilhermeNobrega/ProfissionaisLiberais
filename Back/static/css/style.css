@@ -600,3 +600,22 @@ body {
 .professional-card .btn:hover {
   background: #2e0099;
 }
+.form-mensagem textarea {
+    resize: vertical;
+    border-radius: 6px;
+    padding: 6px;
+    font-size: 0.95rem;
+}
+
+.form-mensagem button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.form-mensagem button:hover {
+    background-color: #2563eb;
+}

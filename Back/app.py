@@ -493,6 +493,54 @@ def cliente_dashboard():
                            ultimos_profissionais=ultimos_profissionais,
                            recomendados=recomendados)
 
+@app.route('/enviar_mensagem', methods=['POST'])
+def enviar_mensagem():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    cliente_id = request.form['cliente_id']
+    profissional_id = request.form['profissional_id']
+    texto = request.form['mensagem']
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO mensagens (cliente_id, profissional_id, texto)
+            VALUES (%s, %s, %s)
+        """, (cliente_id, profissional_id, texto))
+        db.commit()
+        flash("Mensagem enviada com sucesso.")
+    except Exception as e:
+        db.rollback()
+        flash(f"Erro ao enviar mensagem: {str(e)}")
+    finally:
+        cursor.close()
+        db.close()
+
+    return redirect(url_for('cliente_dashboard'))
+
+
+
+@app.route('/api/profissionais_por_profissao')
+def profissionais_por_profissao():
+    profissao = request.args.get('profissao')
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT profissional_id, CONCAT(primeiro_nome, ' ', ultimo_nome) AS nome
+        FROM profissionais
+        WHERE profissao = %s
+    """, (profissao,))
+    
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+    
+    return jsonify(profissionais)
+
 
 @app.route('/profissional-dashboard')
 def profissional_dashboard():
