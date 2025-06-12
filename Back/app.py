@@ -57,6 +57,67 @@ def logout():
     return redirect(url_for('home'))  # ou 'login', se preferir
 
 
+@app.route('/cliente/mensagens', methods=['GET', 'POST'])
+def cliente_mensagens():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    cliente_id = session['usuario_id']
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    # Recuperar o profissional mais recente com quem o cliente conversou
+    cursor.execute("""
+        SELECT u.usuario_id AS profissional_id, u.nome
+        FROM mensagens m
+        JOIN usuarios u ON u.usuario_id = m.destinatario_id
+        WHERE m.remetente_id = %s
+        ORDER BY m.data_envio DESC
+        LIMIT 1
+    """, (cliente_id,))
+    profissional = cursor.fetchone()
+
+    if not profissional:
+        flash('Você ainda não enviou nenhuma mensagem para um profissional.')
+        return render_template('cliente-mensagens.html', mensagens=[], cliente_id=cliente_id)
+
+    profissional_id = profissional['profissional_id']
+
+    # Se for POST, salvar nova mensagem
+    if request.method == 'POST':
+        texto = request.form.get('mensagem')
+        if texto:
+            cursor.execute("""
+                INSERT INTO mensagens (remetente_id, destinatario_id, texto, data_envio)
+                VALUES (%s, %s, %s, NOW())
+            """, (cliente_id, profissional_id, texto))
+            db.commit()
+            return redirect(url_for('cliente_mensagens'))
+
+    # Buscar todas as mensagens entre cliente e profissional
+    cursor.execute("""
+        SELECT m.*, u.nome as nome_remetente
+        FROM mensagens m
+        JOIN usuarios u ON m.remetente_id = u.usuario_id
+        WHERE (m.remetente_id = %s AND m.destinatario_id = %s)
+           OR (m.remetente_id = %s AND m.destinatario_id = %s)
+        ORDER BY m.data_envio ASC
+    """, (cliente_id, profissional_id, profissional_id, cliente_id))
+    mensagens = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return render_template(
+        'cliente-mensagens.html',
+        mensagens=mensagens,
+        cliente_id=cliente_id
+    )
+
+
+
+
+
 @app.route('/cliente/meu-perfil')
 def cliente_meu_perfil():
     if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
@@ -493,33 +554,60 @@ def cliente_dashboard():
                            ultimos_profissionais=ultimos_profissionais,
                            recomendados=recomendados)
 
-@app.route('/enviar_mensagem', methods=['POST'])
-def enviar_mensagem():
-    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+
+@app.route('/profissional/mensagens/<int:cliente_id>', methods=['GET', 'POST'])
+def conversa_com_cliente(cliente_id):
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'profissional':
         return redirect(url_for('login'))
 
-    cliente_id = request.form['cliente_id']
-    profissional_id = request.form['profissional_id']
-    texto = request.form['mensagem']
+    profissional_usuario_id = session['usuario_id']
 
     db = get_db_connection()
-    cursor = db.cursor()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
-    try:
+    # Buscar ID do profissional logado
+    cursor.execute("SELECT profissional_id FROM profissionais WHERE usuario_id = %s", (profissional_usuario_id,))
+    profissional_data = cursor.fetchone()
+    if not profissional_data:
+        flash("Profissional não encontrado.")
+        return redirect(url_for('login'))
+    profissional_id = profissional_data['profissional_id']
+
+    # Buscar dados do cliente
+    cursor.execute("SELECT nome FROM usuarios WHERE usuario_id = %s", (cliente_id,))
+    cliente = cursor.fetchone()
+
+    # Buscar histórico de mensagens
+    cursor.execute("""
+        SELECT * FROM mensagens
+        WHERE (remetente_id = %s AND destinatario_id = %s)
+           OR (remetente_id = %s AND destinatario_id = %s)
+        ORDER BY data_envio
+    """, (profissional_id, cliente_id, cliente_id, profissional_id))
+    mensagens = cursor.fetchall()
+
+    # Marcar mensagens do cliente como lidas quando o profissional visualiza
+    cursor.execute("""
+    UPDATE mensagens
+    SET lida = TRUE
+    WHERE remetente_id = %s AND destinatario_id = %s AND lida = FALSE
+""", (cliente_id, profissional_id))
+    db.commit()
+
+
+    # Enviar nova mensagem
+    if request.method == 'POST':
+        texto = request.form['mensagem']
         cursor.execute("""
-            INSERT INTO mensagens (cliente_id, profissional_id, texto)
-            VALUES (%s, %s, %s)
-        """, (cliente_id, profissional_id, texto))
+            INSERT INTO mensagens (remetente_id, destinatario_id, texto, data_envio)
+            VALUES (%s, %s, %s, NOW())
+        """, (profissional_id, cliente_id, texto))
         db.commit()
-        flash("Mensagem enviada com sucesso.")
-    except Exception as e:
-        db.rollback()
-        flash(f"Erro ao enviar mensagem: {str(e)}")
-    finally:
-        cursor.close()
-        db.close()
+        return redirect(url_for('conversa_com_cliente', cliente_id=cliente_id))
 
-    return redirect(url_for('cliente_dashboard'))
+    cursor.close()
+    db.close()
+    return render_template('conversa.html', mensagens=mensagens, cliente=cliente, profissional_id=profissional_id)
 
 
 
@@ -542,6 +630,61 @@ def profissionais_por_profissao():
     return jsonify(profissionais)
 
 
+@app.route('/profissional/responder/<int:mensagem_id>', methods=['POST'])
+def responder_mensagem(mensagem_id):
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'profissional':
+        return redirect(url_for('login'))
+
+    resposta = request.form.get('resposta')
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute("""
+            UPDATE mensagens
+            SET resposta = %s, data_resposta = NOW()
+            WHERE id = %s
+        """, (resposta, mensagem_id))
+        db.commit()
+        flash("Resposta enviada com sucesso!", "success")
+    except Exception as e:
+        db.rollback()
+        flash(f"Erro ao responder: {str(e)}", "error")
+    finally:
+        cursor.close()
+        db.close()
+
+    return redirect(url_for('profissional_dashboard'))
+
+@app.route('/mensagem/enviar', methods=['POST'])
+def enviar_mensagem():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    cliente_id = session['usuario_id']
+    profissional_id = request.form['profissional_id']
+    texto = request.form['mensagem']
+
+    db = get_db_connection()
+    cursor = db.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO mensagens (remetente_id, destinatario_id, texto)
+            VALUES (%s, %s, %s)
+        """, (cliente_id, profissional_id, texto))
+        db.commit()
+        flash("Mensagem enviada com sucesso!")
+    except Exception as e:
+        db.rollback()
+        flash(f"Erro ao enviar mensagem: {str(e)}", "error")
+    finally:
+        cursor.close()
+        db.close()
+
+    return redirect(url_for('cliente_dashboard'))
+
+
 @app.route('/profissional-dashboard')
 def profissional_dashboard():
     if 'usuario_id' not in session or session.get('tipo_usuario') != 'profissional':
@@ -551,7 +694,7 @@ def profissional_dashboard():
     db = get_db_connection()
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
-    # Buscar dados do profissional vinculado ao usuário logado
+    # Dados do profissional logado
     cursor.execute("""
         SELECT p.profissional_id, u.email, p.primeiro_nome, p.ultimo_nome, 
                p.media_avaliacao
@@ -567,15 +710,15 @@ def profissional_dashboard():
 
     profissional_id = profissional['profissional_id']
 
-    # Contar total de avaliações recebidas
+    # Total de avaliações
     cursor.execute("SELECT COUNT(*) as total FROM feedbacks WHERE profissional_id = %s", (profissional_id,))
     total_avaliacoes = cursor.fetchone()['total']
 
-    # Contar clientes únicos atendidos
+    # Clientes únicos atendidos
     cursor.execute("SELECT COUNT(DISTINCT cliente_id) as total FROM feedbacks WHERE profissional_id = %s", (profissional_id,))
     total_clientes = cursor.fetchone()['total']
 
-    # Últimos feedbacks recebidos (sem campo nota)
+    # Últimos feedbacks recebidos
     cursor.execute("""
         SELECT f.comentario, f.data_envio, u.nome as cliente_nome
         FROM feedbacks f
@@ -586,16 +729,52 @@ def profissional_dashboard():
     """, (profissional_id,))
     feedbacks = cursor.fetchall()
 
-    cursor.close()
-    db.close()
+    cursor.execute("""
+    SELECT COUNT(*) as nao_lidas
+    FROM mensagens
+    WHERE destinatario_id = %s AND lida = FALSE
+""", (profissional_id,))
+    mensagens_nao_lidas = cursor.fetchone()['nao_lidas']
+
+    # Contar mensagens não lidas (sem resposta ainda)
+    cursor.execute("""
+    SELECT COUNT(*) AS nao_lidas
+    FROM mensagens
+    WHERE destinatario_id = %s AND resposta IS NULL
+""", (profissional_id,))
+    mensagens_nao_lidas = cursor.fetchone()['nao_lidas']
+    # Contatos (clientes que enviaram mensagens)
+
+    cursor.execute("""
+        SELECT DISTINCT u.usuario_id, u.nome
+        FROM mensagens m
+        JOIN usuarios u ON m.remetente_id = u.usuario_id
+        WHERE m.destinatario_id = %s
+    """, (profissional_id,))
+    contatos = cursor.fetchall()
+
+    # Mensagens recebidas do profissional
+    cursor.execute("""
+    SELECT m.id, m.texto, m.data_envio, m.resposta, m.data_resposta,
+           u.nome AS nome_cliente
+    FROM mensagens m
+    JOIN usuarios u ON m.remetente_id = u.usuario_id
+    WHERE m.destinatario_id = %s
+    ORDER BY m.data_envio DESC
+""", (profissional_id,))
+    mensagens = cursor.fetchall()
 
     return render_template(
         'profissional-dashboard.html',
         profissional=profissional,
         total_avaliacoes=total_avaliacoes,
         total_clientes=total_clientes,
-        feedbacks=feedbacks
+        feedbacks=feedbacks,
+        contatos=contatos,
+        mensagens_nao_lidas=mensagens_nao_lidas,
+        mensagens=mensagens
     )
+
 
 
 

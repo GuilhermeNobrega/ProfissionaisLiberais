@@ -7,6 +7,58 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
+
+    #caixa-mensagens {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 280px;
+  height: 100%;
+  background-color: #fff;
+  border-left: 1px solid #ccc;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.topo-chat {
+  background-color: #4A3E8D;
+  color: white;
+  padding: 16px;
+  text-align: center;
+}
+
+#busca-contato {
+  width: 90%;
+  padding: 8px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+.lista-contatos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lista-contatos li {
+  border-bottom: 1px solid #eee;
+}
+
+.lista-contatos li a {
+  display: block;
+  padding: 12px 16px;
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.lista-contatos li a:hover {
+  background-color: #f5f5f5;
+}
+
     body {
       margin: 0;
       display: flex;
@@ -108,23 +160,127 @@
       color: #f39c12;
       font-weight: bold;
     }
+
+    .mensagem-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+
+    .mensagem-card p {
+      margin: 6px 0;
+    }
+
+    .mensagem-card form textarea {
+      width: 100%;
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .mensagem-card form button {
+      margin-top: 8px;
+      background-color: #4A3E8D;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #caixa-mensagens {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background: #4A3E8D;
+  color: white;
+  box-shadow: -2px 0 6px rgba(0,0,0,0.1);
+  display: none;
+  flex-direction: column;
+  z-index: 999;
+}
+
+.mensagem-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #382a66;
+  padding: 15px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+#fechar-mensagens {
+  background: transparent;
+  color: white;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.mensagem-search {
+  padding: 10px;
+}
+
+.mensagem-search input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+}
+
+.mensagem-lista {
+  flex: 1;
+  overflow-y: auto;
+  background: white;
+  color: #333;
+}
+
+.contato {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.contato:hover {
+  background-color: #f5f5f5;
+}
+
+#btn-abrir-mensagens {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #4A3E8D;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 24px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 998;
+}
   </style>
 </head>
 <body>
-
-  <!-- Sidebar -->
   <div class="sidebar">
     <h2>Área do Profissional</h2>
-    <ul>
-      <li><a href="/profissional-dashboard"><i class="fas fa-home"></i> Início</a></li>
-      <li><a href="/profissional/perfil"><i class="fas fa-user"></i> Meu perfil</a></li>
-      <li><a href="/profissional/avaliacoes"><i class="fas fa-star"></i> Minhas avaliações</a></li>
-      <li><a href="/profissional/servicos"><i class="fas fa-briefcase"></i> Meus serviços</a></li>
-      <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
-    </ul>
+   <ul>
+    <li><a href="/profissional-dashboard"><i class="fas fa-home"></i> Início</a></li>
+    <li><a href="/profissional/perfil"><i class="fas fa-user"></i> Meu perfil</a></li>
+    <li><a href="/profissional/avaliacoes"><i class="fas fa-star"></i> Minhas avaliações</a></li>
+    <li><a href="/profissional/servicos"><i class="fas fa-briefcase"></i> Meus serviços</a></li>
+    <li><a href="/profissional/mensagens"><i class="fas fa-comments"></i> Mensagens</a></li>
+    <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+</ul>
+
   </div>
 
-  <!-- Conteúdo -->
   <div class="content">
     <h1>Bem-vindo(a), {{ profissional.primeiro_nome }} {{ profissional.ultimo_nome }}!</h1>
     <p><strong>Email:</strong> {{ profissional.email }}</p>
@@ -144,20 +300,119 @@
       </div>
     </div>
 
-   <div class="section">
-  <h2>Últimos Feedbacks Recebidos</h2>
-  {% if feedbacks %}
-    {% for fb in feedbacks %}
-      <div class="feedback-card">
-        <p><strong>{{ fb.cliente_nome }}</strong> disse:</p>
-        <p>"{{ fb.comentario }}"</p>
-        <p class="rating">🕒 Recebido em {{ fb.data_envio.strftime('%d/%m/%Y %H:%M') }}</p>
-      </div>
-    {% endfor %}
-  {% else %}
-    <p>Você ainda não recebeu feedbacks.</p>
+    <div class="section">
+      <h2>Últimos Feedbacks Recebidos</h2>
+      {% if feedbacks %}
+        {% for fb in feedbacks %}
+          <div class="feedback-card">
+            <p><strong>{{ fb.cliente_nome }}</strong> disse:</p>
+            <p>"{{ fb.comentario }}"</p>
+            <p class="rating">🕒 Recebido em {{ fb.data_envio.strftime('%d/%m/%Y %H:%M') }}</p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>Você ainda não recebeu feedbacks.</p>
+      {% endif %}
+    </div>
+      
+    <div class="section">
+      <h2>Mensagens de Clientes</h2>
+      {% if mensagens %}
+        {% for msg in mensagens %}
+          <div class="mensagem-card">
+            <p><strong>{{ msg.nome_cliente }}</strong> em {{ msg.data_envio.strftime('%d/%m/%Y %H:%M') }}</p>
+            <p>Mensagem: {{ msg.texto }}</p>
+            {% if msg.resposta %}
+              <p><strong>Resposta:</strong> {{ msg.resposta }}</p>
+              <p class="rating">🕒 Respondido em {{ msg.data_resposta.strftime('%d/%m/%Y %H:%M') }}</p>
+            {% else %}
+              <form method="post" action="{{ url_for('responder_mensagem', mensagem_id=msg.id) }}">
+                <label for="resposta">Responder:</label>
+                <textarea name="resposta" rows="2" required></textarea>
+                <button type="submit">Enviar resposta</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>Você ainda não recebeu mensagens.</p>
+      {% endif %}
+    </div>
+  </div>
+<!-- Botão flutuante para abrir o chat -->
+<!-- Botão flutuante para abrir o chat -->
+<button id="btn-abrir-mensagens" style="
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #4A3E8D;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 1000;
+">
+  💬
+  {% if mensagens_nao_lidas > 0 %}
+    <span style="
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: red;
+      color: white;
+      font-size: 12px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    ">{{ mensagens_nao_lidas }}</span>
   {% endif %}
-</div>
+</button>
 
+
+<!-- Caixa lateral de mensagens -->
+<div id="caixa-mensagens">
+  <div class="mensagem-header">
+    <span></span>
+    <button id="fechar-mensagens">❌</button>
+  </div>
+  <div class="topo-chat">
+    <h3>Mensagens</h3>
+    <input type="text" id="busca-contato" placeholder="🔍 Buscar...">
+
+  </div>
+  <ul class="lista-contatos">
+    {% for cliente in contatos %}
+      <li>
+        <a href="{{ url_for('conversa_com_cliente', cliente_id=cliente.usuario_id) }}">
+          <i class="fas fa-user-circle"></i> {{ cliente.nome }}
+        </a>
+      </li>
+    {% else %}
+      <li style="padding: 10px; text-align: center;">Nenhuma mensagem</li>
+    {% endfor %}
+  </ul>
+
+</div>
 </body>
 </html>
+
+<script>
+  document.getElementById('btn-abrir-mensagens').addEventListener('click', () => {
+    document.getElementById('caixa-mensagens').style.display = 'flex';
+  });
+
+  document.getElementById('fechar-mensagens').addEventListener('click', () => {
+    document.getElementById('caixa-mensagens').style.display = 'none';
+  });
+
+  function abrirConversa(clienteId) {
+    window.location.href = `/profissional/conversa/${clienteId}`;
+  }
+</script>

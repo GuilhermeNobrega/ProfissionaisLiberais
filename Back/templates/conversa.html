@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Conversa com {{ cliente.nome }}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .chat-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 20px;
+      background-color: #4a3e8d;
+      color: white;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .chat-body {
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .mensagem {
+      max-width: 70%;
+      margin-bottom: 20px;
+      padding: 12px 18px;
+      border-radius: 20px;
+      clear: both;
+      position: relative;
+      word-wrap: break-word;
+    }
+
+    .cliente {
+      background: #e0e0e0;
+      float: left;
+    }
+
+    .profissional {
+      background: #d1c4e9;
+      float: right;
+      text-align: right;
+    }
+
+    .cliente::before {
+      content: "👤 Cliente";
+      font-size: 0.75em;
+      color: #777;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .profissional::before {
+      content: "🧑‍💼 Você";
+      font-size: 0.75em;
+      color: #555;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .mensagem small {
+      display: block;
+      font-size: 0.75em;
+      margin-top: 5px;
+      color: #555;
+    }
+
+    .chat-form {
+      border-top: 1px solid #ccc;
+      padding: 15px 20px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: sticky;
+      bottom: 0;
+    }
+
+    .chat-form textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+
+    .chat-form button {
+      align-self: flex-end;
+      padding: 10px 20px;
+      background-color: #4a3e8d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .chat-form button:hover {
+      background-color: #372e6e;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      Conversa com {{ cliente.nome }}
+    </div>
+
+    <div class="chat-body">
+      {% for msg in mensagens|sort(attribute='data_envio') %}
+        <div class="mensagem {% if msg.remetente_id == profissional_id %}profissional{% else %}cliente{% endif %}">
+          {{ msg.texto }}
+          <small>{{ msg.data_envio.strftime('%d/%m/%Y %H:%M') }}</small>
+        </div>
+      {% endfor %}
+    </div>
+
+    <form method="POST" class="chat-form">
+      <textarea name="mensagem" rows="3" placeholder="Digite sua resposta..." required></textarea>
+      <button type="submit"><i class="fas fa-paper-plane"></i> Enviar</button>
+    </form>
+  </div>
+</body>
+</html>

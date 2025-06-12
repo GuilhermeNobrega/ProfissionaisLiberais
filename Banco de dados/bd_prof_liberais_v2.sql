@@ -402,5 +402,22 @@ CREATE TABLE mensagens (
 
 
 SELECT DISTINCT profissao FROM profissionais;
-
+SELECT * FROM profissionais;
 SELECT * FROM mensagens ORDER BY id DESC;
+select * from mensagens;
+DROP TABLE IF EXISTS mensagens;
+CREATE TABLE mensagens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    remetente_id INT NOT NULL,
+    destinatario_id INT NOT NULL,
+    texto TEXT NOT NULL,
+    data_envio DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (remetente_id) REFERENCES usuarios(usuario_id),
+    FOREIGN KEY (destinatario_id) REFERENCES usuarios(usuario_id)
+);
+
+ALTER TABLE mensagens
+ADD COLUMN resposta TEXT,
+ADD COLUMN data_resposta DATETIME;
+ALTER TABLE mensagens ADD COLUMN lida BOOLEAN DEFAULT FALSE;
+
