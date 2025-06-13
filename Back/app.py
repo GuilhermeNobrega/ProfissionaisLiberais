@@ -223,6 +223,34 @@ def servico_advocacia():
 
     return render_template('servico-advocacia.html', profissionais=profissionais)
 
+@app.route('/cliente/profissionais/advocacia')
+def cliente_profissionais_advocacia():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            p.media_avaliacao
+        FROM profissionais p
+        WHERE LOWER(p.profissao) LIKE '%advogado%'
+           OR LOWER(p.profissao) LIKE '%advogada%'
+           OR LOWER(p.profissao) LIKE '%direito%'
+        ORDER BY p.media_avaliacao DESC
+    """)
+
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return render_template('cliente-profissionais-advocacia.html', profissionais=profissionais)
+
 
 @app.route('/servico-contabilidade.html')
 def servico_contabilidade():
@@ -547,11 +575,34 @@ def cliente_dashboard():
     """, (cliente_id,))
     recomendados = cursor.fetchall()
 
+    # Profissionais com quem o cliente já falou
+    cursor.execute("""
+    SELECT DISTINCT p.profissional_id, CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome
+    FROM mensagens m
+    JOIN profissionais p ON (
+        (m.remetente_id = p.profissional_id AND m.destinatario_id = %s)
+        OR (m.destinatario_id = p.profissional_id AND m.remetente_id = %s)
+    )
+""", (cliente_id, cliente_id))
+    contatos = cursor.fetchall()
+
+# Mensagens não lidas do profissional
+    cursor.execute("""
+    SELECT COUNT(*) as nao_lidas
+    FROM mensagens
+    WHERE destinatario_id = %s AND remetente_id IN (
+        SELECT profissional_id FROM profissionais
+    ) AND lida = FALSE
+""", (cliente_id,))
+    respostas_nao_lidas = cursor.fetchone()['nao_lidas']
+
     cursor.close()
     db.close()
 
     return render_template("cliente-dashboard.html", cliente=cliente,
                            ultimos_profissionais=ultimos_profissionais,
+                           contatos=contatos,
+                           respostas_nao_lidas=respostas_nao_lidas,
                            recomendados=recomendados)
 
 
@@ -816,6 +867,58 @@ def dashboard_cliente():
     db.close()
 
     return render_template("cliente_dashboard.html", cliente=cliente, agendamentos=agendamentos)
+
+
+
+@app.route('/cliente/conversa/<int:profissional_id>', methods=['GET', 'POST'])
+def conversa_com_profissional(profissional_id):
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    cliente_id = session['usuario_id']
+
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    # Buscar dados do profissional
+    cursor.execute("SELECT CONCAT(primeiro_nome, ' ', ultimo_nome) AS nome FROM profissionais WHERE profissional_id = %s", (profissional_id,))
+    profissional = cursor.fetchone()
+
+    if not profissional:
+        flash("Profissional não encontrado.")
+        return redirect(url_for('cliente_dashboard'))
+
+    # Buscar mensagens entre cliente e profissional
+    cursor.execute("""
+        SELECT * FROM mensagens
+        WHERE (remetente_id = %s AND destinatario_id = %s)
+           OR (remetente_id = %s AND destinatario_id = %s)
+        ORDER BY data_envio
+    """, (cliente_id, profissional_id, profissional_id, cliente_id))
+    mensagens = cursor.fetchall()
+
+    # Marcar mensagens do profissional como lidas
+    cursor.execute("""
+        UPDATE mensagens
+        SET lida = TRUE
+        WHERE remetente_id = %s AND destinatario_id = %s AND lida = FALSE
+    """, (profissional_id, cliente_id))
+    db.commit()
+
+    # Enviar nova mensagem
+    if request.method == 'POST':
+        texto = request.form['mensagem']
+        cursor.execute("""
+            INSERT INTO mensagens (remetente_id, destinatario_id, texto, data_envio)
+            VALUES (%s, %s, %s, NOW())
+        """, (cliente_id, profissional_id, texto))
+        db.commit()
+        return redirect(url_for('conversa_com_profissional', profissional_id=profissional_id))
+
+    cursor.close()
+    db.close()
+    return render_template('cliente-mensagens.html', mensagens=mensagens,
+                           cliente_id=cliente_id, profissional=profissional)
 
 # ------------------------- RODAR A APLICAÇÃO -------------------------
 

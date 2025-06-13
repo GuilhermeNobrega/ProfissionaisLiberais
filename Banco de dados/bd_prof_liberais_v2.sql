@@ -421,3 +421,11 @@ ADD COLUMN resposta TEXT,
 ADD COLUMN data_resposta DATETIME;
 ALTER TABLE mensagens ADD COLUMN lida BOOLEAN DEFAULT FALSE;
 
+
+select * from mensagens;
+select * from profissionais;
+select * from usuarios;
+SELECT * FROM mensagens ORDER BY data_envio DESC;
+
+SELECT profissional_id, usuario_id, primeiro_nome, ultimo_nome 
+FROM profissionais;

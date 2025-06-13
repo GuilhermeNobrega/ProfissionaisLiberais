@@ -7,13 +7,25 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body {
-      margin: 0;
-      display: flex;
+     body {
       font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
       background-color: #f9f9f9;
     }
-
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #4a3e8d;
+    }
     .sidebar {
       width: 260px;
       background-color: #243447;
@@ -21,56 +33,45 @@
       height: 135vh;
       padding: 30px 20px;
     }
-
     .sidebar h2 {
       margin-bottom: 40px;
       font-size: 1.6em;
     }
-
     .sidebar ul {
       list-style: none;
       padding: 0;
     }
-
     .sidebar li {
       margin: 20px 0;
     }
-
     .sidebar a {
       color: white;
       text-decoration: none;
       font-size: 1.1em;
     }
-
     .sidebar a i {
       margin-right: 10px;
     }
-
     .content {
       flex: 1;
       padding: 50px;
     }
-
     .content h1 {
       font-size: 2em;
       margin-bottom: 10px;
     }
-
     .section {
       margin-top: 40px;
     }
-
     .section h2 {
       margin-bottom: 20px;
       font-size: 1.4em;
     }
-
     .card-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
     }
-
     .professional-card {
       background-color: white;
       border-radius: 10px;
@@ -79,25 +80,21 @@
       padding: 20px;
       text-align: center;
     }
-
     .professional-card img {
       width: 100px;
       height: 100px;
       object-fit: cover;
       border-radius: 50%;
     }
-
     .professional-card h3 {
       margin-top: 15px;
       font-size: 1.2em;
     }
-
     .professional-card p {
       margin: 8px 0;
       font-size: 0.95em;
       color: #555;
     }
-
     .btn {
       display: inline-block;
       margin-top: 10px;
@@ -109,14 +106,12 @@
       font-weight: bold;
       font-size: 0.95em;
     }
-
     .btn:hover {
       background-color: #4b00c4;
     }
-
     #chat-botao {
       position: fixed;
-      bottom: 25px;
+      bottom: 100px;
       right: 25px;
       background-color: #4A3E8D;
       color: white;
@@ -125,14 +120,12 @@
       border-radius: 50%;
       cursor: pointer;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      z-index: 999;
+      z-index: 1000;
       transition: background 0.3s ease;
     }
-
     #chat-botao:hover {
       background-color: #6a0dad;
     }
-
     #chat-box {
       display: none;
       position: fixed;
@@ -146,13 +139,11 @@
       z-index: 1000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-
     #chat-box label {
       font-weight: bold;
       display: block;
       margin-top: 10px;
     }
-
     #chat-box select, #chat-box textarea {
       width: 100%;
       margin-top: 4px;
@@ -161,7 +152,6 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-
     #chat-box button[type="submit"] {
       background-color: #4A3E8D;
       color: white;
@@ -171,20 +161,19 @@
       width: 100%;
       cursor: pointer;
     }
-
     #chat-box #chat-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
     }
-
     #chat-box #chat-header button {
       background: none;
       border: none;
       font-size: 18px;
       cursor: pointer;
     }
+    
   </style>
 </head>
 <body>
@@ -241,12 +230,69 @@
     </div>
   </div>
 
-  <!-- Botão flutuante -->
+   <!-- Botão flutuante histórico -->
+  <button id="btn-abrir-mensagens" style="
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #4A3E8D;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 1000;
+  ">
+    💬
+    {% if respostas_nao_lidas > 0 %}
+      <span style="
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: red;
+        color: white;
+        font-size: 12px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      ">{{ respostas_nao_lidas }}</span>
+    {% endif %}
+  </button>
+
+  <!-- Caixa lateral histórico -->
+  <div id="caixa-mensagens" style="display: none; position: fixed; right: 0; top: 0; width: 300px; height: 100%; background-color: #4a3e8d; z-index: 999; box-shadow: -2px 0 5px rgba(0,0,0,0.2); flex-direction: column;">
+    <div style="display: flex; justify-content: space-between; padding: 15px; background-color: #372e6e; color: white;">
+      <span>Mensagens</span>
+      <button id="fechar-mensagens" style="background: none; border: none; color: white;">❌</button>
+    </div>
+    <div style="padding: 10px;">
+      <input type="text" id="busca-contato" placeholder="🔍 Buscar..." style="width: 100%; padding: 5px; border-radius: 4px;">
+    </div>
+    <ul class="lista-contatos" style="list-style: none; padding: 0; margin: 0; overflow-y: auto;">
+      {% for profissional in contatos %}
+        <li style="padding: 10px; border-bottom: 1px solid #ccc;">
+          <a href="{{ url_for('conversa_com_profissional', profissional_id=profissional.profissional_id) }}" style="color: white; text-decoration: none;">
+            🧑‍💼 {{ profissional.nome }}
+          </a>
+        </li>
+      {% else %}
+        <li style="padding: 10px; text-align: center; color: white;">Nenhuma conversa</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Botão flutuante nova mensagem -->
   <div id="chat-botao" onclick="toggleChat()" title="Falar com um profissional">
     💬
   </div>
 
-  <!-- Caixa de chat -->
+  <!-- Caixa de chat nova mensagem -->
   <div id="chat-box">
     <div id="chat-header">
       <span>Enviar mensagem</span>
@@ -317,6 +363,22 @@
             profissionalSelect.innerHTML = '<option value="">Nenhum profissional encontrado</option>';
           }
         });
+    });
+
+    document.getElementById('btn-abrir-mensagens').addEventListener('click', () => {
+      document.getElementById('caixa-mensagens').style.display = 'flex';
+    });
+
+    document.getElementById('fechar-mensagens').addEventListener('click', () => {
+      document.getElementById('caixa-mensagens').style.display = 'none';
+    });
+
+    document.getElementById('busca-contato').addEventListener('keyup', function () {
+      const termo = this.value.toLowerCase();
+      document.querySelectorAll('.lista-contatos li').forEach(function (li) {
+        const texto = li.textContent.toLowerCase();
+        li.style.display = texto.includes(termo) ? '' : 'none';
+      });
     });
   </script>
 </body>
