@@ -252,6 +252,36 @@ def cliente_profissionais_advocacia():
     return render_template('cliente-profissionais-advocacia.html', profissionais=profissionais)
 
 
+@app.route('/cliente/profissionais/contabilidade')
+def cliente_profissionais_contabilidade():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'cliente':
+        return redirect(url_for('login'))
+
+    db = get_db_connection()
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    
+    cursor.execute("""
+        SELECT 
+            p.profissional_id,
+            CONCAT(p.primeiro_nome, ' ', p.ultimo_nome) AS nome,
+            p.profissao,
+            COALESCE(p.foto_perfil, '/static/imgs/placeholder.png') AS foto_perfil,
+            p.media_avaliacao
+        FROM profissionais p
+        WHERE LOWER(p.profissao) LIKE '%contador%'
+        OR LOWER(p.profissao) LIKE '%contadora%'
+        OR LOWER(p.profissao) LIKE '%fiscal%'
+        OR LOWER(p.profissao) LIKE '%contabilidade%'
+        ORDER BY p.media_avaliacao DESC
+    """)
+
+    profissionais = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return render_template('cliente-profissionais-contabilidade.html', profissionais=profissionais)
+
+
 @app.route('/servico-contabilidade.html')
 def servico_contabilidade():
     db = get_db_connection()

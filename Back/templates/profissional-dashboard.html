@@ -274,8 +274,6 @@
     <li><a href="/profissional-dashboard"><i class="fas fa-home"></i> Início</a></li>
     <li><a href="/profissional/perfil"><i class="fas fa-user"></i> Meu perfil</a></li>
     <li><a href="/profissional/avaliacoes"><i class="fas fa-star"></i> Minhas avaliações</a></li>
-    <li><a href="/profissional/servicos"><i class="fas fa-briefcase"></i> Meus serviços</a></li>
-    <li><a href="/profissional/mensagens"><i class="fas fa-comments"></i> Mensagens</a></li>
     <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
 </ul>
 
@@ -314,31 +312,7 @@
         <p>Você ainda não recebeu feedbacks.</p>
       {% endif %}
     </div>
-      
-    <div class="section">
-      <h2>Mensagens de Clientes</h2>
-      {% if mensagens %}
-        {% for msg in mensagens %}
-          <div class="mensagem-card">
-            <p><strong>{{ msg.nome_cliente }}</strong> em {{ msg.data_envio.strftime('%d/%m/%Y %H:%M') }}</p>
-            <p>Mensagem: {{ msg.texto }}</p>
-            {% if msg.resposta %}
-              <p><strong>Resposta:</strong> {{ msg.resposta }}</p>
-              <p class="rating">🕒 Respondido em {{ msg.data_resposta.strftime('%d/%m/%Y %H:%M') }}</p>
-            {% else %}
-              <form method="post" action="{{ url_for('responder_mensagem', mensagem_id=msg.id) }}">
-                <label for="resposta">Responder:</label>
-                <textarea name="resposta" rows="2" required></textarea>
-                <button type="submit">Enviar resposta</button>
-              </form>
-            {% endif %}
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>Você ainda não recebeu mensagens.</p>
-      {% endif %}
-    </div>
-  </div>
+
 <!-- Botão flutuante para abrir o chat -->
 <!-- Botão flutuante para abrir o chat -->
 <button id="btn-abrir-mensagens" style="
