@@ -37,18 +37,28 @@
         </div>
 
         <div class="form-group" id="areaProfissional" style="display: none;">
-    <label for="areaAtuacao">Área de Atuação</label>
-    <select id="areaAtuacao" name="area_atuacao" required>
-      <option value="">Selecione a área</option>
-      <option value="Advocacia">Advocacia</option>
-      <option value="Contabilidade">Contabilidade</option>
-      <option value="Engenharia">Engenharia</option>
-      <option value="TI e Desenvolvimento">TI e Desenvolvimento</option>
-      <option value="Saúde">Saúde</option>
-      <option value="Educação">Educação</option>
-  </select>
-</div>
-
+          <label for="areaAtuacao">Profissão</label>
+          <select id="areaAtuacao" name="profissao">
+            <option value="">Selecione a profissão</option>
+            <option value="Advogado Empresarial">Advogado Empresarial</option>
+            <option value="Advogado Trabalhista">Advogado Trabalhista</option>
+            <option value="Advogado Civil">Advogado Civil</option>
+            <option value="Contador">Contador</option>
+            <option value="Contadora">Contadora</option>
+            <option value="Engenheiro Civil">Engenheiro Civil</option>
+            <option value="Engenheiro Ambiental">Engenheiro Ambiental</option>
+            <option value="Engenheiro Elétrico">Engenheiro Elétrico</option>
+            <option value="Desenvolvedor Full Stack">Desenvolvedor Full Stack</option>
+            <option value="Analista de Sistemas">Analista de Sistemas</option>
+            <option value="Especialista em Segurança da Informação">Especialista em Segurança da Informação</option>
+            <option value="Médica Clínica Geral">Médica Clínica Geral</option>
+            <option value="Psicólogo">Psicólogo</option>
+            <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
+            <option value="Professor de Matemática">Professor de Matemática</option>
+            <option value="Professor de Língua Portuguesa">Professor de Língua Portuguesa</option>
+            <option value="Pedagogo">Pedagogo</option>
+          </select>
+        </div>
 
         <button type="submit" class="submit-button">Cadastrar</button>
       </form>
@@ -56,18 +66,23 @@
   </div>
 
   <script>
-    document.getElementById("tipoUsuario").addEventListener("change", function() {
-  const tipoUsuario = this.value;
-  const areaProfissional = document.getElementById("areaProfissional");
+    const tipoUsuarioSelect = document.getElementById("tipoUsuario");
+    const areaProfissional = document.getElementById("areaProfissional");
+    const profissaoSelect = document.getElementById("areaAtuacao");
 
-  // Se o tipo de usuário for "profissional", mostra o campo de área de atuação
-  if (tipoUsuario === "profissional") {
-    areaProfissional.style.display = "block";
-  } else {
-    areaProfissional.style.display = "none";
-  }
-});
+    function atualizarCampoProfissao() {
+      const tipo = tipoUsuarioSelect.value;
+      if (tipo === "profissional") {
+        areaProfissional.style.display = "block";
+        profissaoSelect.setAttribute("required", "required");
+      } else {
+        areaProfissional.style.display = "none";
+        profissaoSelect.removeAttribute("required");
+      }
+    }
 
+    tipoUsuarioSelect.addEventListener("change", atualizarCampoProfissao);
+    window.addEventListener("DOMContentLoaded", atualizarCampoProfissao);
   </script>
 </body>
 </html>

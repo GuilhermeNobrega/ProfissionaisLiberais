@@ -163,26 +163,31 @@ def cadastro():
         email = dados.get('email')
         senha = dados.get('senha')
         nome = dados.get('nome')
-        telefone = dados.get('telefone')
         tipo_usuario = dados.get('tipo_usuario')
+        profissao = dados.get('profissao')  # pode vir vazio se for cliente
 
         if not all([email, senha, nome, tipo_usuario]):
             return "Dados incompletos", 400
+
+        if tipo_usuario == 'profissional' and not profissao:
+            return "Profissão obrigatória para profissionais", 400
 
         db = get_db_connection()
         cursor = db.cursor()
         try:
             cursor.execute("""
-                INSERT INTO usuarios (email, senha_hash, nome, telefone, tipo_usuario)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (email, senha, nome, telefone, tipo_usuario))
+            INSERT INTO usuarios (email, senha_hash, nome, tipo_usuario)
+            VALUES (%s, %s, %s, %s)
+        """, (email, senha, nome, tipo_usuario))
             usuario_id = cursor.lastrowid
 
             if tipo_usuario == 'cliente':
                 cursor.execute("INSERT INTO clientes (usuario_id) VALUES (%s)", (usuario_id,))
             elif tipo_usuario == 'profissional':
-                cursor.execute("INSERT INTO profissionais (usuario_id, primeiro_nome, ultimo_nome, profissao) VALUES (%s, %s, %s, %s)",
-                               (usuario_id, nome.split()[0], nome.split()[-1], ''))
+                cursor.execute("""
+                    INSERT INTO profissionais (usuario_id, primeiro_nome, ultimo_nome, profissao)
+                    VALUES (%s, %s, %s, %s)
+                """, (usuario_id, nome.split()[0], nome.split()[-1], profissao))
 
             db.commit()
         except Exception as e:
@@ -195,6 +200,8 @@ def cadastro():
         return redirect(url_for('login'))
 
     return render_template('cadastro.html')
+
+
 
 # ------------------------- SERVIÇO POR PROFISSÃO -------------------------
 @app.route('/servico-advocacia.html')
