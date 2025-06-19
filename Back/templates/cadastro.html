@@ -36,46 +36,38 @@
           </select>
         </div>
 
+        <div class="form-group" id="areaProfissional" style="display: none;">
+    <label for="areaAtuacao">Área de Atuação</label>
+    <select id="areaAtuacao" name="area_atuacao" required>
+      <option value="">Selecione a área</option>
+      <option value="Advocacia">Advocacia</option>
+      <option value="Contabilidade">Contabilidade</option>
+      <option value="Engenharia">Engenharia</option>
+      <option value="TI e Desenvolvimento">TI e Desenvolvimento</option>
+      <option value="Saúde">Saúde</option>
+      <option value="Educação">Educação</option>
+  </select>
+</div>
+
+
         <button type="submit" class="submit-button">Cadastrar</button>
       </form>
     </div>
   </div>
 
   <script>
-    document.getElementById("cadastroForm").addEventListener("submit", function(event) {
-      const senha = document.getElementById("senha").value;
-      const confirmSenha = document.getElementById("confirmSenha").value;
-      const senhaError = document.getElementById("senhaError");
-      const confirmSenhaError = document.getElementById("confirmSenhaError");
-      const tipoUsuario = document.getElementById("tipoUsuario").value;
+    document.getElementById("tipoUsuario").addEventListener("change", function() {
+  const tipoUsuario = this.value;
+  const areaProfissional = document.getElementById("areaProfissional");
 
-      const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  // Se o tipo de usuário for "profissional", mostra o campo de área de atuação
+  if (tipoUsuario === "profissional") {
+    areaProfissional.style.display = "block";
+  } else {
+    areaProfissional.style.display = "none";
+  }
+});
 
-      let valid = true;
-
-      if (!regex.test(senha)) {
-        senhaError.style.display = "block";
-        valid = false;
-      } else {
-        senhaError.style.display = "none";
-      }
-
-      if (senha !== confirmSenha) {
-        confirmSenhaError.style.display = "block";
-        valid = false;
-      } else {
-        confirmSenhaError.style.display = "none";
-      }
-
-      if (!tipoUsuario) {
-        alert("Por favor, selecione o tipo de usuário.");
-        valid = false;
-      }
-
-      if (!valid) {
-        event.preventDefault();
-      }
-    });
   </script>
 </body>
 </html>
