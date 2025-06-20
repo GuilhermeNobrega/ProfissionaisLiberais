@@ -221,7 +221,7 @@ def servico_advocacia():
            OR LOWER(p.profissao) LIKE '%advogada%'
            OR LOWER(p.profissao) LIKE '%direito%'
         ORDER BY p.media_avaliacao DESC
-        LIMIT 3
+        LIMIT 4
     """)
 
     profissionais = cursor.fetchall()
